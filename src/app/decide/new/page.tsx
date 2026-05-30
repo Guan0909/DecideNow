@@ -25,7 +25,7 @@ export default function NewDecision() {
     voteCount: number;
   }
   const [dbOptions, setDbOptions] = useState<DbOption[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     // 从 URL 读取输入
