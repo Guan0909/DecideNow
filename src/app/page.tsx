@@ -13,10 +13,8 @@ export default function Home() {
   const [mode, setMode] = useState<"single" | "multi">("single");
 
   const handleTagSelect = (template: string) => {
-    // 快速填充：触发 InputEngine 的输入
     const textarea = document.querySelector("textarea");
     if (textarea) {
-      // 通过原生事件触发 React 的 onChange
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
         window.HTMLTextAreaElement.prototype,
         "value"
@@ -27,7 +25,6 @@ export default function Home() {
   };
 
   const handleSubmit = async (input: string, parseResult: ParseResult | null) => {
-    // 存储在 sessionStorage 中，跳转后读取
     sessionStorage.setItem("decidenow_input", input);
     if (parseResult) {
       sessionStorage.setItem("decidenow_constraints", JSON.stringify(parseResult));
@@ -96,10 +93,18 @@ export default function Home() {
         {/* 快捷标签 */}
         <QuickTags onSelect={handleTagSelect} />
 
-        {/* 底部提示 */}
-        <p className="mt-auto py-6 text-center text-xs text-muted-foreground/40">
-          无需注册，打开即用 · AI 驱动 · 朋友一起决定
-        </p>
+        {/* 底部 */}
+        <div className="mt-auto flex flex-col items-center gap-3 py-6">
+          <button
+            onClick={() => router.push("/history")}
+            className="text-sm text-muted-foreground/60 hover:text-primary transition-colors"
+          >
+            📋 我的决定库
+          </button>
+          <p className="text-center text-xs text-muted-foreground/40">
+            无需注册，打开即用 · AI 驱动 · 朋友一起决定
+          </p>
+        </div>
       </div>
     </main>
   );

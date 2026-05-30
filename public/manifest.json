@@ -1,0 +1,18 @@
+{
+  "name": "DecideNow - 让每一个纠结都有答案",
+  "short_name": "DecideNow",
+  "description": "用 AI + 社交投票，帮助你在生活琐事和群体决策中快速做出选择。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFAF5",
+  "theme_color": "#FF6B35",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -13,6 +13,22 @@ export const metadata: Metadata = {
   title: "DecideNow - 让每一个纠结都有答案",
   description:
     "用 AI + 社交投票，帮助你在生活琐事和群体决策中快速做出选择。",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "DecideNow",
+  },
+  openGraph: {
+    title: "DecideNow - 让每一个纠结都有答案",
+    description: "用 AI + 社交投票，快速做出选择。3秒提需求，10秒得结果。",
+    type: "website",
+    locale: "zh_CN",
+  },
 };
 
 export const viewport = {
