@@ -18,6 +18,7 @@ DecideNow —— 让每一个纠结都有答案。用 AI + 社交投票帮助年
 | 开发规范 | [docs/development-guide.md](docs/development-guide.md) | 命名约定、Git 规范、检查清单 |
 | API 规范 | [docs/api-spec.md](docs/api-spec.md) | 接口定义、入参出参、错误码 |
 | 开发计划 | [C:\Users\Guan09\.claude\plans\decidenow-lucky-hellman.md](C:\Users\Guan09\.claude\plans\decidenow-lucky-hellman.md) | 整体实施计划 |
+| Supabase 注册 | [docs/supabase-setup-guide.md](docs/supabase-setup-guide.md) | 小白版 Supabase 注册配置指南 |
 
 ## 工作约定
 
