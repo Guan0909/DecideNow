@@ -149,6 +149,7 @@ export default function Home() {
   /* ---------- 提交：多人 ---------- */
   const handleMulti = useCallback(() => {
     if (input.trim().length < 3) return;
+    sessionStorage.setItem("decidenow_room_title", input.trim());
     window.location.href = "/room/create";
   }, [input]);
 
