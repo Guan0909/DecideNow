@@ -23,7 +23,8 @@
       "Bash(curl -s --connect-timeout 5 \"https://udhdrktjhyzhmahnyhyu.supabase.co\")",
       "Bash(nslookup db.udhdrktjhyzhmahnyhyu.supabase.co 8.8.8.8)",
       "Bash(curl -s -X POST http://localhost:3000/api/ai/parse -H \"Content-Type: application/json\" -d '{\"input\":\"三个人，人均80元，徐家汇附近，想吃辣的，要能聊天\"}')",
-      "Bash(curl -s -X POST http://localhost:3000/api/ai/generate -H 'Content-Type: application/json' -d '{\"input\":\"三个人吃辣，徐家汇附近，人均80\",\"constraints\":{\"people\":3,\"budget\":80,\"location\":\"徐家汇\",\"taste\":\"辣\",\"atmosphere\":\"适合聊天\",\"occasion\":null,\"keywords\":[]}}')"
+      "Bash(curl -s -X POST http://localhost:3000/api/ai/generate -H 'Content-Type: application/json' -d '{\"input\":\"三个人吃辣，徐家汇附近，人均80\",\"constraints\":{\"people\":3,\"budget\":80,\"location\":\"徐家汇\",\"taste\":\"辣\",\"atmosphere\":\"适合聊天\",\"occasion\":null,\"keywords\":[]}}')",
+      "Bash(npx shadcn@latest add input textarea badge card separator -y)"
     ]
   }
 }
