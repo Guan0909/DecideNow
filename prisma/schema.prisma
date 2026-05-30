@@ -1,12 +1,12 @@
-// DecideNow - 数据库模型（本地开发用 SQLite）
-// 生产部署时切换为 PostgreSQL：将 prisma/schema.pg.prisma 覆盖此文件
+// DecideNow - 数据库模型
+// 使用 Prisma ORM + PostgreSQL (Supabase 托管)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 // ============================================
@@ -27,16 +27,16 @@ model User {
 // 决策表
 // ============================================
 model Decision {
-  id          String   @id @default(uuid())
-  title       String           // 原始输入，如"三个人吃辣，徐家汇附近"
-  mode        String   @default("SINGLE") // SINGLE | MULTI
-  status      String   @default("PENDING") // PENDING | COMPLETED | EXPIRED
-  selectedId  String?          // 最终选中的选项 ID
-  constraints String?          // AI 解析的约束条件（JSON 字符串）
-  createdAt   DateTime @default(now())
+  id          String         @id @default(uuid())
+  title       String         // 原始输入，如"三个人吃辣，徐家汇附近"
+  mode        DecisionMode   @default(SINGLE)
+  status      DecisionStatus @default(PENDING)
+  selectedId  String?        // 最终选中的选项 ID
+  constraints Json?          // AI 解析的约束条件
+  createdAt   DateTime       @default(now())
   completedAt DateTime?
   ownerId     String?
-  owner       User?    @relation(fields: [ownerId], references: [id])
+  owner       User?          @relation(fields: [ownerId], references: [id])
   options     Option[]
   room        Room?
 }
@@ -45,18 +45,18 @@ model Decision {
 // 选项表
 // ============================================
 model Option {
-  id           String   @id @default(uuid())
-  decisionId   String
-  decision     Decision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
-  name         String           // 选项名称，如"破店小酒馆（徐汇店）"
-  description  String           // AI 推荐语
-  priceHint    String?          // 价格提示
-  locationHint String?          // 地点提示
-  scoreCard    String?          // 评分卡（JSON 字符串）
-  imageUrl     String?          // 选项配图
-  voteCount    Int      @default(0)
-  sortOrder    Int      @default(0)
-  votes        Vote[]
+  id          String   @id @default(uuid())
+  decisionId  String
+  decision    Decision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  name        String   // 选项名称，如"破店小酒馆（徐汇店）"
+  description String   // AI 推荐语
+  priceHint   String?  // 价格提示，如"人均78元"
+  locationHint String? // 地点提示
+  scoreCard   Json?    // 评分卡 JSON: {taste: 4, ambiance: 5, budget: 4}
+  imageUrl    String?  // 选项配图（后期接入）
+  voteCount   Int      @default(0)
+  sortOrder   Int      @default(0)
+  votes       Vote[]
 }
 
 // ============================================
@@ -68,7 +68,7 @@ model Vote {
   option      Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
   userId      String?
   user        User?    @relation(fields: [userId], references: [id])
-  reason      String?          // 投票理由
+  reason      String?  // 投票理由，可选
   isAnonymous Boolean  @default(false)
   createdAt   DateTime @default(now())
 }
@@ -78,11 +78,25 @@ model Vote {
 // ============================================
 model Room {
   id          String    @id @default(uuid())
-  shareCode   String    @unique  // 6位短码
+  shareCode   String    @unique  // 6位短码，如 ABC123
   decisionId  String    @unique
   decision    Decision  @relation(fields: [decisionId], references: [id], onDelete: Cascade)
   isAnonymous Boolean   @default(false)
   deadline    DateTime? // 截止时间
   closedAt    DateTime? // 手动截止时间
   createdAt   DateTime  @default(now())
+}
+
+// ============================================
+// 枚举
+// ============================================
+enum DecisionMode {
+  SINGLE // 单人决策
+  MULTI  // 多人投票
+}
+
+enum DecisionStatus {
+  PENDING   // 进行中
+  COMPLETED // 已完成
+  EXPIRED   // 已过期
 }
