@@ -44,7 +44,7 @@ export async function GET(
         id: room.decision.id,
         title: room.decision.title,
         status: room.decision.status,
-        options: room.decision.options.map((opt) => ({
+        options: room.decision.options.map((opt: { id: string; name: string; description: string; voteCount: number }) => ({
           id: opt.id,
           name: opt.name,
           description: opt.description,
