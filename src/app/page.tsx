@@ -176,7 +176,8 @@ export default function Home() {
      ======================================== */
   if (view === "loading") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-background px-8">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-8 px-8"
+        style={{ background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)" }}>
         <div className="animate-breathe text-center">
           <Sparkles className="mx-auto mb-6 h-12 w-12 text-primary" />
           <p className="text-xl font-bold text-foreground">正在为你思考...</p>
@@ -201,7 +202,8 @@ export default function Home() {
      ======================================== */
   if (view === "cards" && options.length > 0) {
     return (
-      <div className="flex min-h-screen flex-col bg-background px-5 py-8 safe-top">
+      <div className="flex min-h-screen flex-col px-5 py-8 safe-top"
+        style={{ background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)" }}>
         {/* 顶部 */}
         <div className="mb-8 flex items-center justify-between">
           <button
@@ -331,23 +333,27 @@ export default function Home() {
      Input (main)
      ======================================== */
   return (
-    <main className="flex min-h-screen flex-col bg-background safe-top safe-bottom">
+    <main className="flex min-h-screen flex-col safe-top safe-bottom"
+      style={{
+        background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)",
+      }}
+    >
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-6 pt-16">
         {/* 顶部导航 */}
         <div className="mb-12 flex items-center justify-between">
-          <span className="text-sm font-medium tracking-wider text-muted-foreground/60">
-            DecideNow
+          <span className="text-sm font-bold tracking-[0.15em] text-foreground/50">
+            DECIDENOW
           </span>
           <button
             onClick={() => window.location.href = "/history"}
-            className="text-xs text-muted-foreground/40 hover:text-primary transition-colors"
+            className="text-xs font-medium text-foreground/35 hover:text-primary transition-colors"
           >
             我的档案
           </button>
         </div>
 
         {/* 主标题 */}
-        <h1 className="mb-10 text-4xl font-extrabold leading-tight tracking-tight text-foreground">
+        <h1 className="mb-10 text-[2.75rem] font-black leading-[1.1] tracking-[-0.02em] text-foreground">
           今天在纠结<br />什么？
         </h1>
 
@@ -379,9 +385,9 @@ export default function Home() {
               <button
                 key={c.label}
                 onClick={() => handleCapsule(c.label)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-white/50 px-4 py-2 text-sm text-muted-foreground backdrop-blur-sm transition-all hover:border-primary/30 hover:text-primary hover:shadow-sm active:scale-95"
+                className="inline-flex items-center gap-1.5 rounded-full border border-foreground/8 bg-white/70 px-4 py-2.5 text-sm font-medium text-foreground/65 backdrop-blur-sm transition-all hover:border-primary/40 hover:text-primary hover:bg-white hover:shadow-md active:scale-95"
               >
-                <span>{c.icon}</span>
+                <span className="text-base">{c.icon}</span>
                 <span>{c.label}</span>
               </button>
             ))}

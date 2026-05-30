@@ -9,14 +9,14 @@
 
 @layer base {
   :root {
-    --background: 60 5% 96%;            /* #F7F7F5 晨雾白 */
-    --foreground: 0 0% 10%;             /* #1A1A1A 曜石黑 */
-    --muted: 60 3% 94%;                 /* #F0F0EE 暮霭灰 */
-    --muted-foreground: 0 0% 42%;       /* #6B6B6B 影灰（加深，WCAG AA） */
+    --background: 40 15% 97%;           /* #F9F7F2 暖调奶白（告别低级平涂） */
+    --foreground: 0 0% 8%;              /* #141414 更深黑，拒绝发虚 */
+    --muted: 40 10% 93%;                /* #EFEDE8 暖灰底 */
+    --muted-foreground: 0 0% 35%;       /* #595959 影灰加黑，AA 级对比 */
 
-    --primary: 140 12% 48%;             /* #6B8F7A 抹茶薄荷深（突出 CTA） */
+    --primary: 155 18% 42%;             /* #5C8370 深抹茶（高级克制感） */
     --primary-foreground: 0 0% 100%;
-    --secondary: 208 9% 54%;            /* #7A8B99 雾霾蓝 */
+    --secondary: 210 12% 48%;           /* #6E8396 雾霾蓝深 */
     --secondary-foreground: 0 0% 100%;
 
     --card: 0 0% 100% / 0.7;
