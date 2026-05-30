@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
   _request: Request,
   { params }: { params: { code: string } }
 ) {
   try {
-    const prisma = getPrisma();
 
     const room = await prisma.room.findUnique({
       where: { shareCode: params.code.toUpperCase() },

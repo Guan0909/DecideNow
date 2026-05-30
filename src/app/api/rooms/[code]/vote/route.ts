@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(
   request: Request,
@@ -16,7 +16,6 @@ export async function POST(
       );
     }
 
-    const prisma = getPrisma();
     const code = params.code.toUpperCase();
 
     // 查找房间
@@ -40,7 +39,7 @@ export async function POST(
     }
 
     // 验证选项属于这个决定
-    const validOption = room.decision.options.find((o) => o.id === optionId);
+    const validOption = room.decision.options.find((o: { id: string }) => o.id === optionId);
     if (!validOption) {
       return NextResponse.json({ error: "无效的选项" }, { status: 400 });
     }

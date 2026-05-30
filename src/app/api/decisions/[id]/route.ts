@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const decision = await getPrisma().decision.findUnique({
+    const decision = await prisma.decision.findUnique({
       where: { id: params.id },
       include: {
         options: {
@@ -38,7 +38,7 @@ export async function PATCH(
     if (status) data.status = status;
     if (selectedOptionId) data.completedAt = new Date();
 
-    const decision = await getPrisma().decision.update({
+    const decision = await prisma.decision.update({
       where: { id: params.id },
       data,
       include: {

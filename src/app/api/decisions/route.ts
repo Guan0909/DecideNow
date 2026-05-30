@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 interface OptionInput {
   name: string;
@@ -21,7 +21,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const prisma = getPrisma();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: Record<string, any> = {
@@ -68,7 +67,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const decisions = await getPrisma().decision.findMany({
+    const decisions = await prisma.decision.findMany({
       orderBy: { createdAt: "desc" },
       take: 20,
       include: {

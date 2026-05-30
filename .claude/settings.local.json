@@ -43,7 +43,9 @@
       "WebFetch(domain:decidenow-ave80n77b-guan09-s-projects.vercel.app)",
       "Bash(GIT_SSH_COMMAND=\"ssh -o StrictHostKeyChecking=accept-new\" git push)",
       "Bash(ssh-keygen -t ed25519 -C \"guan09@decidenow\" -f ~/.ssh/id_ed25519 -N \"\")",
-      "Read(//c/Users/Guan09/.ssh/**)"
+      "Read(//c/Users/Guan09/.ssh/**)",
+      "Bash(sed -i 's/import { getPrisma } from \"@\\\\/lib\\\\/prisma\"/import { prisma } from \"@\\\\/lib\\\\/prisma\"/g; s/getPrisma\\(\\)/prisma/g; s/const prisma = getPrisma\\(\\);//g; s/const prisma = prisma\\(\\);//g' src/app/api/decisions/route.ts src/app/api/decisions/\\\\[id\\\\]/route.ts src/app/api/rooms/route.ts src/app/api/rooms/\\\\[code\\\\]/route.ts src/app/api/rooms/\\\\[code\\\\]/vote/route.ts src/app/api/rooms/\\\\[code\\\\]/close/route.ts 2>&1)",
+      "Bash(sed -i '/const prisma = prisma;/d' src/app/api/decisions/route.ts src/app/api/decisions/\\\\[id\\\\]/route.ts src/app/api/rooms/route.ts src/app/api/rooms/\\\\[code\\\\]/route.ts src/app/api/rooms/\\\\[code\\\\]/vote/route.ts src/app/api/rooms/\\\\[code\\\\]/close/route.ts 2>&1)"
     ],
     "additionalDirectories": [
       "d:\\DecideNow\\src\\app\\api\\decisions",
