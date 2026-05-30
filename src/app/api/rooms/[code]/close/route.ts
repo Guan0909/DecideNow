@@ -7,7 +7,7 @@ export async function POST(
 ) {
   try {
     const code = params.code.toUpperCase();
-    const { data: room, error: rErr } = await supabase
+    const { data: room, error: rErr } = await getSupabase()
       .from("Room").select("*").eq("shareCode", code).single();
 
     if (rErr || !room) return NextResponse.json({ error: "房间不存在" }, { status: 404 });
