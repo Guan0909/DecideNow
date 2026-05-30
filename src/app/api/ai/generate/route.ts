@@ -14,16 +14,23 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!constraints || typeof constraints !== "object") {
-      return NextResponse.json(
-        { error: "请提供有效的约束条件" },
-        { status: 400 }
-      );
-    }
+    // 约束条件可选，为空时用默认值
+    const safeConstraints: Constraints = constraints && typeof constraints === "object"
+      ? constraints as Constraints
+      : {
+          people: null,
+          budget: null,
+          location: null,
+          taste: null,
+          atmosphere: null,
+          occasion: null,
+          keywords: [],
+          rawInput: input.trim(),
+        };
 
     const result = await generateOptions(
       input.trim(),
-      constraints as Constraints,
+      safeConstraints,
       Math.min(Math.max(count, 1), 5) // 限制 1-5 个选项
     );
 
