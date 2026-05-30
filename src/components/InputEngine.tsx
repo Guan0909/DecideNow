@@ -9,7 +9,7 @@ import type { ParseResult } from "@/lib/types";
 
 interface InputEngineProps {
   mode: "single" | "multi";
-  onSubmit: (input: string, parseResult: ParseResult | null) => void;
+  onSubmit: (input: string) => void;
 }
 
 export function InputEngine({ mode, onSubmit }: InputEngineProps) {
@@ -53,7 +53,7 @@ export function InputEngine({ mode, onSubmit }: InputEngineProps) {
 
   const handleSubmit = () => {
     if (input.trim().length < 3) return;
-    onSubmit(input.trim(), parseResult);
+    onSubmit(input.trim());
   };
 
   const c = parseResult?.constraints;

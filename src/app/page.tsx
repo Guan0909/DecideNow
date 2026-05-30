@@ -6,7 +6,6 @@ import { InputEngine } from "@/components/InputEngine";
 import { QuickTags } from "@/components/QuickTags";
 import { Separator } from "@/components/ui/separator";
 import { Sparkles, Users, User } from "lucide-react";
-import type { ParseResult } from "@/lib/types";
 
 export default function Home() {
   const router = useRouter();
@@ -24,7 +23,7 @@ export default function Home() {
     }
   };
 
-  const handleSubmit = async (input: string, _parseResult: ParseResult | null) => {
+  const handleSubmit = async (input: string) => {
     if (mode === "single") {
       window.location.href = "/decide/new?q=" + encodeURIComponent(input);
     } else {
