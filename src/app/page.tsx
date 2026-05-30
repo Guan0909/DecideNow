@@ -112,7 +112,7 @@ export default function Home() {
     "比如：周末去哪玩？户外自驾...",
   ]);
 
-  // 获取位置
+  // 获取位置（OpenStreetMap 免费 API，无需 Key）
   useEffect(() => {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
@@ -120,18 +120,19 @@ export default function Home() {
         try {
           const { latitude, longitude } = pos.coords;
           const res = await fetch(
-            `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=67c4a2b0e290a444558749bof6c1f09`
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=12&accept-language=zh`,
+            { headers: { "User-Agent": "DecideNow/1.0" } }
           );
           if (res.ok) {
             const data = await res.json();
-            const city = data.address?.city || data.address?.town || data.address?.county || "";
-            const district = data.address?.suburb || data.address?.city_district || "";
-            setLocation(district || city || null);
+            const addr = data.address || {};
+            const district = addr.city_district || addr.suburb || addr.county || addr.city || addr.town || "";
+            if (district) setLocation(district);
           }
-        } catch { /* 定位失败不影响使用 */ }
+        } catch { /* 定位不影响使用 */ }
       },
       () => { /* 用户拒绝定位 */ },
-      { timeout: 5000, enableHighAccuracy: false }
+      { timeout: 8000, enableHighAccuracy: false }
     );
   }, []);
 
@@ -216,15 +217,19 @@ export default function Home() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-10 px-8"
         style={{ background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)" }}>
-        {/* 呼吸光环 */}
+        {/* 返回按钮 */}
+        <button
+          onClick={() => { setView("input"); setErrorMsg(null); }}
+          className="absolute left-6 top-10 text-xs font-medium text-foreground/30 hover:text-primary transition-colors"
+        >
+          ← 取消
+        </button>
+
         <div className="animate-breathe relative">
           <div className="absolute inset-0 rounded-full bg-primary/10 blur-2xl" style={{ width: 120, height: 120, left: -20, top: -20 }} />
           <Sparkles className="relative z-10 mx-auto h-14 w-14 text-primary" />
         </div>
-
         <p className="text-xl font-bold text-foreground">正在为你思考...</p>
-
-        {/* 步骤条 */}
         <div className="flex w-full max-w-xs flex-col gap-3">
           {[
             { icon: "🔍", label: "解析你的需求", detail: "理解约束条件" },
@@ -236,16 +241,12 @@ export default function Home() {
               className="animate-float-up flex items-center gap-4 rounded-2xl bg-white/60 backdrop-blur-sm px-5 py-3.5 border border-foreground/5 shadow-sm"
               style={{ animationDelay: `${i * 0.25}s` }}
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground/[0.04] text-xl">
-                {step.icon}
-              </span>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground/[0.04] text-xl">{step.icon}</span>
               <div className="text-left">
                 <p className="text-sm font-semibold text-foreground">{step.label}</p>
                 <p className="text-xs text-muted-foreground">{step.detail}</p>
               </div>
-              {i < 2 && (
-                <span className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-primary/60" />
-              )}
+              {i < 2 && <span className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-primary/60" />}
             </div>
           ))}
         </div>
@@ -264,7 +265,7 @@ export default function Home() {
         <div className="mb-8 flex items-center justify-between">
           <button
             onClick={() => { setView("input"); setInput(""); }}
-            className="text-xs text-foreground/35 hover:text-primary transition-colors duration-300"
+            className="rounded-xl bg-white/60 backdrop-blur-sm border border-foreground/5 px-4 py-2 text-xs font-medium text-foreground/50 hover:text-primary hover:border-primary/20 transition-all duration-300"
           >
             ← 重新输入
           </button>
