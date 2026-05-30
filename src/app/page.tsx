@@ -56,7 +56,8 @@ export default function Home() {
 
   const handleSubmit = async (input: string) => {
     if (mode === "multi") {
-      window.location.href = "/room/create?q=" + encodeURIComponent(input);
+      // 多人模式：直接跳转，不带参数
+      window.location.href = "/room/create";
       return;
     }
 
