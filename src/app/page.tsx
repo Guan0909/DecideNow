@@ -453,12 +453,21 @@ export default function Home() {
         </h1>
 
         {/* 位置标签 */}
-        {location && (
-          <div className="mb-4 flex items-center gap-1.5 text-xs font-medium text-muted-foreground/60">
-            <MapPin className="h-3 w-3" />
-            <span>基于你在 <strong className="text-foreground/70">{location}</strong> 附近推荐</span>
-          </div>
-        )}
+        <div className="mb-4 flex items-center gap-2 text-xs">
+          <MapPin className="h-3 w-3 text-muted-foreground/40" />
+          {location ? (
+            <span className="text-muted-foreground/60">
+              基于 <strong className="text-foreground/70">{location}</strong> 推荐
+            </span>
+          ) : (
+            <input
+              placeholder="输入你的区域（如 徐汇区）"
+              className="flex-1 rounded-lg border border-foreground/8 bg-white/40 px-2.5 py-1.5 text-xs placeholder:text-foreground/15 focus:outline-none focus:border-primary/30"
+              onBlur={(e) => { if (e.target.value.trim()) setLocation(e.target.value.trim()); }}
+              onKeyDown={(e) => { if (e.key === "Enter" && e.currentTarget.value.trim()) { setLocation(e.currentTarget.value.trim()); e.currentTarget.blur(); } }}
+            />
+          )}
+        </div>
 
         {/* 无边界输入框 */}
         <div className="relative mb-6">
