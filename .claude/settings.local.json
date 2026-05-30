@@ -26,11 +26,13 @@
       "Bash(curl -s -X POST http://localhost:3000/api/ai/generate -H 'Content-Type: application/json' -d '{\"input\":\"三个人吃辣，徐家汇附近，人均80\",\"constraints\":{\"people\":3,\"budget\":80,\"location\":\"徐家汇\",\"taste\":\"辣\",\"atmosphere\":\"适合聊天\",\"occasion\":null,\"keywords\":[]}}')",
       "Bash(npx shadcn@latest add input textarea badge card separator -y)",
       "Bash(mkdir -p src/app/api/decisions/\\\\[id\\\\] src/app/decide/\\\\[id\\\\]/card)",
-      "Bash(sed -i 's/import { prisma } from \"@\\\\/lib\\\\/prisma\"/import { getPrisma } from \"@\\\\/lib\\\\/prisma\"/g; s/await prisma\\\\./await getPrisma\\(\\)./g; s/const prisma/const _unused/g' src/app/api/decisions/route.ts src/app/api/decisions/\\\\[id\\\\]/route.ts 2>&1)"
+      "Bash(sed -i 's/import { prisma } from \"@\\\\/lib\\\\/prisma\"/import { getPrisma } from \"@\\\\/lib\\\\/prisma\"/g; s/await prisma\\\\./await getPrisma\\(\\)./g; s/const prisma/const _unused/g' src/app/api/decisions/route.ts src/app/api/decisions/\\\\[id\\\\]/route.ts 2>&1)",
+      "Bash(mkdir -p src/app/api/rooms/\\\\[code\\\\]/vote src/app/api/rooms/\\\\[code\\\\]/close src/app/room/\\\\[code\\\\]/result)"
     ],
     "additionalDirectories": [
       "d:\\DecideNow\\src\\app\\api\\decisions",
-      "D:\\DecideNow\\src\\app\\api\\decisions\\[id]"
+      "D:\\DecideNow\\src\\app\\api\\decisions\\[id]",
+      "d:\\DecideNow\\src\\app\\api\\rooms\\[code]"
     ]
   }
 }
