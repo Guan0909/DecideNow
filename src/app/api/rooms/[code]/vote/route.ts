@@ -43,12 +43,8 @@ export async function POST(
     if (vErr) throw new Error(vErr.message);
 
     // 更新票数
-    await supabase.rpc("increment_vote", { option_id: optionId }).catch(async () => {
-      // rpc 可能不存在，直接用 update
-      const { data: opt } = await supabase.from("Option").select("voteCount").eq("id", optionId).single();
-      const count = (opt?.voteCount || 0) + 1;
-      await supabase.from("Option").update({ voteCount: count }).eq("id", optionId);
-    });
+    const { data: opt } = await supabase.from("Option").select("voteCount").eq("id", optionId).single();
+    await supabase.from("Option").update({ voteCount: ((opt?.voteCount as number) || 0) + 1 }).eq("id", optionId);
 
     return NextResponse.json({ success: true, voteId: vote.id }, { status: 201 });
   } catch (error) {
