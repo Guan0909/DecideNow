@@ -71,8 +71,8 @@ export default function CreateRoom() {
 
       const data = await res.json();
       setResult(data);
-    } catch {
-      // ignore
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "创建失败，请重试");
     } finally {
       setLoading(false);
     }
