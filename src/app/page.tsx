@@ -287,8 +287,7 @@ export default function Home() {
 
         {/* 阶段 3: 印章盖下 */}
         <p className="animate-stamp relative z-10 text-lg font-black uppercase tracking-[0.4em]"
-           style={{ color: "#B8935A" }}
-           style={{ transform: "rotate(-5deg)" }}>
+           style={{ color: "#B8935A", transform: "rotate(-5deg)" }}>
           决定时刻
         </p>
 

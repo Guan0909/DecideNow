@@ -24,15 +24,15 @@ export default function CreateRoom() {
   const [result, setResult] = useState<{ shareCode: string; shareUrl: string; deadline: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // 从首页传入的标题
+  // 从首页传入的标题（仅首次挂载执行）
   useEffect(() => {
     const saved = sessionStorage.getItem("decidenow_room_title");
     if (saved) {
       setTitle(saved);
       sessionStorage.removeItem("decidenow_room_title");
-      // 自动触发 AI 预填
       handleAiFill(saved);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function addOption() { if (options.length < 10) setOptions([...options, ""]); }
