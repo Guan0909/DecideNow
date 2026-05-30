@@ -16,6 +16,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import type { DecisionOption } from "@/lib/types";
+import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
 
 type View = "input" | "loading" | "cards" | "result";
 
@@ -64,18 +65,40 @@ export default function Home() {
     setError(null);
 
     try {
-      const genRes = await fetch("/api/ai/generate", {
+      // 直接调 DeepSeek API（浏览器端，绕过 Vercel 10s 超时）
+      const apiKey = "sk-c6544b31afef47a2b3d6a9cb0bcb3709";
+      const genRes = await fetch("https://api.deepseek.com/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input, constraints: null }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "deepseek-v4-pro",
+          messages: [
+            { role: "system", content: GENERATE_SYSTEM_PROMPT },
+            { role: "user", content: `用户需求：${input}\n\n请生成 3 个决策选项。` },
+          ],
+          temperature: 0.8,
+          max_tokens: 1500,
+        }),
       });
 
       if (!genRes.ok) {
-        const err = await genRes.json();
-        throw new Error(err.error || "AI 生成失败");
+        const errText = await genRes.text();
+        throw new Error(errText.slice(0, 200) || "AI 生成失败");
       }
 
-      const { options: generated } = await genRes.json();
+      const data = await genRes.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) throw new Error("AI 返回空结果");
+
+      // 提取 JSON
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("AI 返回非 JSON 格式");
+
+      const parsed = JSON.parse(jsonMatch[0]);
+      const generated = parsed.options;
       if (!generated || generated.length === 0) {
         throw new Error("AI 未能生成选项");
       }
@@ -83,22 +106,6 @@ export default function Home() {
       setOptions(generated);
       setCurrentIndex(0);
       setView("cards");
-
-      // 保存到数据库
-      const saveRes = await fetch("/api/decisions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: input,
-          mode: "SINGLE",
-          options: generated,
-        }),
-      });
-
-      if (saveRes.ok) {
-        const decision = await saveRes.json();
-        setDbOptions(decision.options);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "未知错误");
     }
