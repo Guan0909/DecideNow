@@ -12,7 +12,16 @@
       "Bash(npx create-next-app@14 . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack --use-npm)",
       "Bash(npx shadcn-ui@latest init --defaults)",
       "Bash(npx shadcn@latest init --defaults)",
-      "Bash(npm uninstall *)"
+      "Bash(npm uninstall *)",
+      "Bash(npm ls *)",
+      "Bash(nslookup db.udhdrktjhyzhmahnyhyu.supabase.co)",
+      "Bash(curl -s \"https://udhdrktjhyzhmahnyhyu.supabase.co/rest/v1/\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkaGRya3RqaHl6aG1haG5oeWh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMjU2NDYsImV4cCI6MjA5NTcwMTY0Nn0.MBXEn2cgWZWgBn0ef-pUBbNojD-d9YFX6T6IKpq9hQM\")",
+      "Bash(nslookup udhdrktjhyzhmahnyhyu.pooler.supabase.com)",
+      "Bash(nslookup aws-0-ap-southeast-1.pooler.supabase.com)",
+      "Bash(nslookup -type=A db.udhdrktjhyzhmahnyhyu.supabase.co)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\" --connect-timeout 5 \"https://db.udhdrktjhyzhmahnyhyu.supabase.co\")",
+      "Bash(curl -s --connect-timeout 5 \"https://udhdrktjhyzhmahnyhyu.supabase.co\")",
+      "Bash(nslookup db.udhdrktjhyzhmahnyhyu.supabase.co 8.8.8.8)"
     ]
   }
 }
