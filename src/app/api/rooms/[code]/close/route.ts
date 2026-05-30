@@ -3,10 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 
 export async function POST(
   _request: Request,
-  { params }: { params: Promise<{ code: string }> }
+  { params }: { params: { code: string } }
 ) {
   try {
-    const { code: raw } = await params; const code = raw.toUpperCase();
+    const code = params.code.toUpperCase();
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,

@@ -5,14 +5,14 @@ function getSupabase() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
 }
 
-export async function POST(request: Request, { params }: { params: Promise<{ code: string }> }) {
+export async function POST(request: Request, { params }: { params: { code: string } }) {
   try {
     const body = await request.json();
     const { optionId, reason } = body;
     if (!optionId) return NextResponse.json({ error: "请选择一个选项" }, { status: 400 });
 
     const supabase = getSupabase();
-    const { code: raw } = await params; const code = raw.toUpperCase();
+    const code = params.code.toUpperCase();
     const { data: room, error: rErr } = await supabase.from("Room").select("*, decision:Decision(*, options:Option(*))").eq("shareCode", code).single();
     if (rErr || !room) return NextResponse.json({ error: "房间不存在" }, { status: 404 });
     if (room.closedAt) return NextResponse.json({ error: "投票已截止" }, { status: 410 });
