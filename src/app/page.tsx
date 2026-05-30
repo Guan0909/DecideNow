@@ -425,7 +425,7 @@ export default function Home() {
 
         {/* 悬浮动作条 —— 弹簧滑入 */}
         {input.trim().length >= 3 && (
-          <div className="animate-slide-up fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 gap-3">
+          <div className="animate-slide-up fixed inset-x-0 bottom-8 z-50 flex justify-center gap-3 px-6">
             <Button
               onClick={() => { setMode("single"); handleSingle(); }}
               size="lg"
