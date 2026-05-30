@@ -36,12 +36,8 @@ export default function Home() {
   const [options, setOptions] = useState<DecisionOption[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [decisionData, setDecisionData] = useState<{
-    title: string;
-    completedAt: string;
-    options: Array<Record<string, unknown>>;
-    selectedId: string;
-  } | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [decisionData, setDecisionData] = useState<any>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [dbOptions, setDbOptions] = useState<DbOption[]>([]);
 
@@ -112,6 +108,8 @@ export default function Home() {
     try {
       setSelectedIndex(currentIndex);
       setDecisionData({
+        id: "local",
+        status: "COMPLETED",
         title: "",
         completedAt: new Date().toISOString(),
         options: options.map((o, i) => ({
