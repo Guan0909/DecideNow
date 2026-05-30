@@ -198,7 +198,6 @@ export default function Home() {
             onSelect={handleSelect}
             onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
             onNext={() => setCurrentIndex((i) => Math.min(options.length - 1, i + 1))}
-            isSelected={false}
           />
         </div>
 
