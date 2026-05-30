@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Plus, X, Sparkles, Loader2, Share2, Wand2 } from "lucide-react";
+import { ArrowLeft, Plus, X, Sparkles, Loader2, Share2, Wand2, Copy, Check } from "lucide-react";
 
 const SYSTEM_PROMPT = `你是 DecideNow 的投票助手。根据用户输入的主题和地点，生成 2-4 个投票选项。
 每个选项必须包含一个具体的推荐地点（真实存在的店名或场所）。
@@ -24,6 +24,7 @@ export default function CreateRoom() {
   const [aiLoading, setAiLoading] = useState(false);
   const [result, setResult] = useState<{ shareCode: string; shareUrl: string; deadline: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   // 从首页传入的标题（仅首次挂载执行）
   useEffect(() => {
@@ -119,7 +120,36 @@ export default function CreateRoom() {
         <Card className="w-full max-w-sm">
           <CardContent className="flex flex-col items-center gap-4 p-6">
             <p className="text-xs text-muted-foreground">分享码</p>
-            <p className="text-5xl font-extrabold tracking-[0.3em] text-primary">{result.shareCode}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-5xl font-extrabold tracking-[0.3em] text-primary">{result.shareCode}</p>
+              <button
+                onClick={async () => {
+                  await navigator.clipboard.writeText(result.shareCode);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                className="shrink-0 rounded-xl border border-foreground/10 bg-white/60 p-2 text-foreground/40 hover:text-primary hover:border-primary/30 transition-all"
+              >
+                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+              </button>
+            </div>
+            <div className="flex items-center gap-2 w-full max-w-[280px]">
+              <input
+                readOnly
+                value={result.shareUrl}
+                className="flex-1 rounded-xl border border-foreground/10 bg-white/60 px-3 py-2 text-xs text-muted-foreground truncate focus:outline-none"
+              />
+              <button
+                onClick={async () => {
+                  await navigator.clipboard.writeText(result.shareUrl);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                className="shrink-0 rounded-xl border border-foreground/10 bg-white/60 px-3 py-2 text-xs font-medium text-foreground/50 hover:text-primary hover:border-primary/30 transition-all"
+              >
+                {copied ? "已复制" : "复制链接"}
+              </button>
+            </div>
             <p className="text-xs text-muted-foreground">截止：{new Date(result.deadline).toLocaleString("zh-CN")}</p>
           </CardContent>
         </Card>
