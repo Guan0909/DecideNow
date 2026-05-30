@@ -120,13 +120,13 @@ export default function Home() {
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "deepseek-v4-pro",
+          model: "deepseek-v4-flash",
           messages: [
             { role: "system", content: GENERATE_SYSTEM_PROMPT },
             { role: "user", content: `用户需求：${input.trim()}\n\n请生成 3 个决策选项。` },
           ],
-          temperature: 0.8,
-          max_tokens: 1500,
+          temperature: 0.7,
+          max_tokens: 800,
         }),
       });
       if (!res.ok) throw new Error("AI 响应异常");
@@ -176,10 +176,21 @@ export default function Home() {
      ======================================== */
   if (view === "loading") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-8">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-background px-8">
         <div className="animate-breathe text-center">
-          <Sparkles className="mx-auto mb-4 h-10 w-10 text-primary" />
-          <p className="text-lg font-semibold text-foreground">正在为你寻找最佳答案...</p>
+          <Sparkles className="mx-auto mb-6 h-12 w-12 text-primary" />
+          <p className="text-xl font-bold text-foreground">正在为你思考...</p>
+        </div>
+        <div className="flex gap-2">
+          {["分析偏好", "匹配选项", "生成建议"].map((step, i) => (
+            <span
+              key={step}
+              className="animate-float-up rounded-full bg-muted px-4 py-2 text-xs text-muted-foreground"
+              style={{ animationDelay: `${i * 0.3}s` }}
+            >
+              {step}
+            </span>
+          ))}
         </div>
       </div>
     );
