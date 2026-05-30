@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { OptionCard } from "@/components/OptionCard";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2, AlertCircle, ArrowLeft } from "lucide-react";
-import type { DecisionOption } from "@/lib/types";
+import type { DecisionOption, Constraints } from "@/lib/types";
 
 export default function NewDecision() {
   const router = useRouter();
@@ -42,7 +42,7 @@ export default function NewDecision() {
 
   async function generateAndSave(
     input: string,
-    constraints: ParseResult["constraints"] | null
+    constraints: Constraints | null
   ) {
     setLoading(true);
     setError(null);
