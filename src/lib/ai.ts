@@ -16,7 +16,7 @@ function createClient(): OpenAI {
     throw new Error("AI_API_KEY 未配置，请在 .env.local 中设置");
   }
 
-  return new OpenAI({ apiKey, baseURL });
+  return new OpenAI({ apiKey, baseURL, timeout: 25000, maxRetries: 1 });
 }
 
 // 延迟初始化，避免 build 时无 Key 报错
