@@ -177,7 +177,6 @@ export default function NewDecision() {
           onNext={() =>
             setCurrentIndex((i) => Math.min(options.length - 1, i + 1))
           }
-          isSelected={selectedId !== null}
         />
       </div>
 
