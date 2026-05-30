@@ -44,7 +44,8 @@ export async function GET(
         id: room.decision.id,
         title: room.decision.title,
         status: room.decision.status,
-        options: room.decision.options.map((opt: { id: string; name: string; description: string; voteCount: number }) => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        options: room.decision.options.map((opt: Record<string, any>) => ({
           id: opt.id,
           name: opt.name,
           description: opt.description,

@@ -21,23 +21,36 @@ export async function POST(request: Request) {
       );
     }
 
-    const decision = await getPrisma().decision.create({
-      data: {
-        title,
-        mode: mode || "SINGLE",
-        constraints: constraints ? JSON.stringify(constraints) : null,
-        status: "PENDING",
-        options: {
-          create: (options as OptionInput[]).map((opt, index) => ({
-            name: opt.name,
-            description: opt.description || "",
-            priceHint: opt.priceHint ?? null,
-            locationHint: opt.locationHint ?? null,
-            scoreCard: opt.scoreCard ? JSON.stringify(opt.scoreCard) : null,
-            sortOrder: index,
-          })),
-        },
-      },
+    const prisma = getPrisma();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: Record<string, any> = {
+      title,
+      mode: mode || "SINGLE",
+      status: "PENDING" as const,
+    };
+    if (constraints) {
+      data.constraints = JSON.stringify(constraints);
+    }
+
+    data.options = {
+      create: (options as OptionInput[]).map((opt, index) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const optData: Record<string, any> = {
+          name: opt.name,
+          description: opt.description || "",
+          sortOrder: index,
+        };
+        if (opt.priceHint) optData.priceHint = opt.priceHint;
+        if (opt.locationHint) optData.locationHint = opt.locationHint;
+        if (opt.scoreCard) optData.scoreCard = JSON.stringify(opt.scoreCard);
+        return optData;
+      }),
+    };
+
+    const decision = await prisma.decision.create({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: data as any,
       include: {
         options: {
           orderBy: { sortOrder: "asc" },
