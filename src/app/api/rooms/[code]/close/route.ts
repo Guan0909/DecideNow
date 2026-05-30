@@ -7,15 +7,16 @@ export async function POST(
 ) {
   try {
     const code = params.code.toUpperCase();
-    const { data: room, error: rErr } = await getSupabase()
+    const supabase = getSupabase();
+    const { data: room, error: rErr } = await supabase
       .from("Room").select("*").eq("shareCode", code).single();
 
     if (rErr || !room) return NextResponse.json({ error: "房间不存在" }, { status: 404 });
     if (room.closedAt) return NextResponse.json({ error: "投票已截止" }, { status: 400 });
 
     const now = new Date().toISOString();
-    await getSupabase().from("Room").update({ closedAt: now }).eq("shareCode", code);
-    await getSupabase().from("Decision").update({ status: "COMPLETED", completedAt: now }).eq("id", room.decisionId);
+    await supabase.from("Room").update({ closedAt: now }).eq("shareCode", code);
+    await supabase.from("Decision").update({ status: "COMPLETED", completedAt: now }).eq("id", room.decisionId);
 
     return NextResponse.json({ success: true });
   } catch {
