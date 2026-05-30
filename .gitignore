@@ -38,3 +38,13 @@ next-env.d.ts
 *.db
 *.db-journal
 .claude/settings.local.json
+
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+
+!.env.example
