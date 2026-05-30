@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase/admin";
 
 export async function POST(
   _request: Request,
@@ -7,42 +7,18 @@ export async function POST(
 ) {
   try {
     const code = params.code.toUpperCase();
+    const { data: room, error: rErr } = await supabase
+      .from("Room").select("*").eq("shareCode", code).single();
 
-    const room = await prisma.room.findUnique({
-      where: { shareCode: code },
-    });
+    if (rErr || !room) return NextResponse.json({ error: "房间不存在" }, { status: 404 });
+    if (room.closedAt) return NextResponse.json({ error: "投票已截止" }, { status: 400 });
 
-    if (!room) {
-      return NextResponse.json({ error: "房间不存在" }, { status: 404 });
-    }
+    const now = new Date().toISOString();
+    await supabase.from("Room").update({ closedAt: now }).eq("shareCode", code);
+    await supabase.from("Decision").update({ status: "COMPLETED", completedAt: now }).eq("id", room.decisionId);
 
-    if (room.closedAt) {
-      return NextResponse.json({ error: "投票已截止" }, { status: 400 });
-    }
-
-    const updated = await prisma.room.update({
-      where: { shareCode: code },
-      data: {
-        closedAt: new Date(),
-        decision: {
-          update: {
-            status: "COMPLETED",
-            completedAt: new Date(),
-          },
-        },
-      },
-      include: {
-        decision: {
-          include: {
-            options: { orderBy: { sortOrder: "asc" } },
-          },
-        },
-      },
-    });
-
-    return NextResponse.json({ success: true, room: updated });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "截止失败";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "操作失败" }, { status: 500 });
   }
 }

@@ -1,35 +1,42 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase/admin";
 
 export async function GET(
   _request: Request,
   { params }: { params: { code: string } }
 ) {
   try {
+    const code = params.code.toUpperCase();
 
-    const room = await prisma.room.findUnique({
-      where: { shareCode: params.code.toUpperCase() },
-      include: {
-        decision: {
-          include: {
-            options: {
-              orderBy: { sortOrder: "asc" },
-              include: {
-                _count: { select: { votes: true } },
-              },
-            },
-          },
-        },
-      },
-    });
+    // 查 Room
+    const { data: room, error: rErr } = await supabase
+      .from("Room")
+      .select("*, decision:Decision(*, options:Option(*))")
+      .eq("shareCode", code)
+      .single();
 
-    if (!room) {
+    if (rErr || !room) {
       return NextResponse.json({ error: "房间不存在" }, { status: 404 });
     }
 
-    // 检查是否已截止
+    const decision = room.decision as Record<string, unknown>;
+    const options = (decision.options as Array<Record<string, unknown>>) || [];
+
+    // 查每个选项的票数
+    const optionIds = options.map((o) => o.id as string);
+    const { data: votes } = await supabase
+      .from("Vote")
+      .select("optionId")
+      .in("optionId", optionIds);
+
+    const voteCounts: Record<string, number> = {};
+    (votes || []).forEach((v: { optionId: string }) => {
+      voteCounts[v.optionId] = (voteCounts[v.optionId] || 0) + 1;
+    });
+
     const now = new Date();
-    const isExpired = room.deadline ? now > room.deadline : false;
+    const deadline = room.deadline ? new Date(room.deadline as string) : null;
+    const isExpired = deadline ? now > deadline : false;
     const isClosed = !!room.closedAt;
 
     return NextResponse.json({
@@ -40,16 +47,15 @@ export async function GET(
       isExpired,
       isClosed,
       decision: {
-        id: room.decision.id,
-        title: room.decision.title,
-        status: room.decision.status,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        options: room.decision.options.map((opt: Record<string, any>) => ({
+        id: decision.id,
+        title: decision.title,
+        status: decision.status,
+        options: options.map((opt) => ({
           id: opt.id,
           name: opt.name,
           description: opt.description,
-          voteCount: opt._count.votes,
-          voteCountDisplay: opt.voteCount, // 从 Option 表读取的冗余计数
+          voteCount: voteCounts[opt.id as string] || 0,
+          voteCountDisplay: opt.voteCount || 0,
         })),
       },
     });

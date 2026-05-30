@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase/admin";
 
 export async function POST(
   request: Request,
@@ -8,61 +8,52 @@ export async function POST(
   try {
     const body = await request.json();
     const { optionId, reason } = body;
-
-    if (!optionId) {
-      return NextResponse.json(
-        { error: "请选择一个选项" },
-        { status: 400 }
-      );
-    }
+    if (!optionId) return NextResponse.json({ error: "请选择一个选项" }, { status: 400 });
 
     const code = params.code.toUpperCase();
 
-    // 查找房间
-    const room = await prisma.room.findUnique({
-      where: { shareCode: code },
-      include: {
-        decision: { include: { options: true } },
-      },
-    });
+    // 查房间
+    const { data: room, error: rErr } = await supabase
+      .from("Room")
+      .select("*, decision:Decision(*, options:Option(*))")
+      .eq("shareCode", code)
+      .single();
 
-    if (!room) {
-      return NextResponse.json({ error: "房间不存在" }, { status: 404 });
-    }
-
-    // 检查是否已截止
-    if (room.closedAt) {
-      return NextResponse.json({ error: "投票已截止" }, { status: 410 });
-    }
-    if (room.deadline && new Date() > room.deadline) {
+    if (rErr || !room) return NextResponse.json({ error: "房间不存在" }, { status: 404 });
+    if (room.closedAt) return NextResponse.json({ error: "投票已截止" }, { status: 410 });
+    if (room.deadline && new Date() > new Date(room.deadline as string)) {
       return NextResponse.json({ error: "投票已过期" }, { status: 410 });
     }
 
-    // 验证选项属于这个决定
-    const validOption = room.decision.options.find((o: { id: string }) => o.id === optionId);
-    if (!validOption) {
+    // 验证选项
+    const decision = room.decision as Record<string, unknown>;
+    const options = (decision.options as Array<{ id: string }>) || [];
+    if (!options.find((o) => o.id === optionId)) {
       return NextResponse.json({ error: "无效的选项" }, { status: 400 });
     }
 
     // 创建投票
-    const vote = await prisma.vote.create({
-      data: {
-        optionId,
-        reason: reason || null,
-        isAnonymous: room.isAnonymous,
-      },
-    });
+    const { data: vote, error: vErr } = await supabase.from("Vote").insert({
+      id: crypto.randomUUID(),
+      optionId,
+      reason: reason || null,
+      isAnonymous: !!room.isAnonymous,
+    }).select().single();
 
-    // 更新选项的冗余票数（用于快速查询）
-    await prisma.option.update({
-      where: { id: optionId },
-      data: { voteCount: { increment: 1 } },
+    if (vErr) throw new Error(vErr.message);
+
+    // 更新票数
+    await supabase.rpc("increment_vote", { option_id: optionId }).catch(async () => {
+      // rpc 可能不存在，直接用 update
+      const { data: opt } = await supabase.from("Option").select("voteCount").eq("id", optionId).single();
+      const count = (opt?.voteCount || 0) + 1;
+      await supabase.from("Option").update({ voteCount: count }).eq("id", optionId);
     });
 
     return NextResponse.json({ success: true, voteId: vote.id }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "投票失败";
-    console.error("[Vote POST]", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const msg = error instanceof Error ? error.message : "投票失败";
+    console.error("[Vote POST]", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
