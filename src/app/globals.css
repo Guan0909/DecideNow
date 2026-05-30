@@ -132,71 +132,118 @@
 }
 
 /* ============================================
-   逐帧结算动画
+   动画引擎 —— 弹簧曲线 + GPU 加速 + 编排时序
    ============================================ */
 @layer utilities {
-  /* 呼吸光晕 */
+  /* ---- 基础缓动 ---- */
+  .ease-spring { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .ease-out-expo { transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  .ease-in-out-soft { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+  /* GPU 加速层 */
+  .gpu {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+
+  /* ---- 呼吸光晕 ---- */
   .animate-breathe {
-    animation: breathe 2s ease-in-out infinite;
+    animation: breathe 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    will-change: transform, opacity;
   }
   @keyframes breathe {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.03); }
+    0%, 100% { opacity: 0.5; transform: scale(1) translateZ(0); }
+    50% { opacity: 1; transform: scale(1.04) translateZ(0); }
   }
 
-  /* 浮现入场 */
+  /* ---- 浮现入场 (通用) ---- */
   .animate-float-up {
-    animation: floatUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: floatUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: transform, opacity;
   }
   @keyframes floatUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(32px) translateZ(0); }
+    to { opacity: 1; transform: translateY(0) translateZ(0); }
   }
 
-  /* 舞台：胜出者放大+光晕 */
+  /* ---- 交错子元素 ---- */
+  .stagger > *:nth-child(1) { animation-delay: 0s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.08s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.16s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.24s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.32s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.40s; }
+  .stagger > *:nth-child(n+7) { animation-delay: 0.48s; }
+
+  /* ---- 结算动画：胜出者放大+光晕 ---- */
   .animate-stage-win {
-    animation: stageWin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+    animation: stageWin 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both;
+    will-change: transform, filter;
   }
   @keyframes stageWin {
-    from { transform: scale(1); filter: brightness(1); }
-    to { transform: scale(1.05); filter: brightness(1.1); }
+    0% { transform: scale(1) translateZ(0); filter: brightness(1); }
+    60% { transform: scale(1.08) translateZ(0); filter: brightness(1.15); }
+    100% { transform: scale(1.04) translateZ(0); filter: brightness(1.06); }
   }
 
-  /* 失败者褪色 */
+  /* ---- 结算动画：失败者褪色 ---- */
   .animate-stage-fade {
-    animation: stageFade 0.4s ease-out 0.1s both;
+    animation: stageFade 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both;
   }
   @keyframes stageFade {
-    from { opacity: 1; }
-    to { opacity: 0.4; }
+    from { opacity: 1; transform: translateZ(0); }
+    to { opacity: 0.35; transform: translateZ(0); }
   }
 
-  /* 印章盖下 */
+  /* ---- 结算动画：印章盖下 ---- */
   .animate-stamp {
-    animation: stamp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+    animation: stamp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.55s both;
+    will-change: transform, opacity;
   }
   @keyframes stamp {
-    from { opacity: 0; transform: rotate(-15deg) scale(2); }
-    to { opacity: 1; transform: rotate(-5deg) scale(1); }
+    0% { opacity: 0; transform: rotate(-18deg) scale(2.5) translateZ(0); }
+    60% { opacity: 1; transform: rotate(-3deg) scale(0.95) translateZ(0); }
+    100% { opacity: 1; transform: rotate(-5deg) scale(1) translateZ(0); }
   }
 
-  /* 卡牌入场（Tinder 式） */
+  /* ---- 卡牌入场 ---- */
   .animate-card-in {
-    animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change: transform, opacity;
   }
   @keyframes cardIn {
-    from { opacity: 0; transform: translateY(20px) scale(0.96); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from { opacity: 0; transform: translateY(28px) scale(0.94) translateZ(0); }
+    to { opacity: 1; transform: translateY(0) scale(1) translateZ(0); }
   }
 
-  /* 高光扫过 */
+  /* ---- 高光扫过 ---- */
   .animate-glow-sweep {
-    animation: glowSweep 1s ease-out 0.6s both;
+    animation: glowSweep 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+    pointer-events: none;
   }
   @keyframes glowSweep {
     0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
-    50% { box-shadow: 0 0 60px 20px hsl(var(--primary) / 0.15); }
+    40% { box-shadow: 0 0 80px 30px hsl(var(--primary) / 0.18); }
     100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+  }
+
+  /* ---- 悬浮动作条滑入 ---- */
+  .animate-slide-up {
+    animation: slideUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    will-change: transform, opacity;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px) translateZ(0); }
+    to { opacity: 1; transform: translateY(0) translateZ(0); }
+  }
+
+  /* ---- 页面切换过渡 ---- */
+  .animate-page-in {
+    animation: pageIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(12px) translateZ(0); }
+    to { opacity: 1; transform: translateY(0) translateZ(0); }
   }
 }
 

@@ -229,35 +229,37 @@ export default function Home() {
      ======================================== */
   if (view === "cards" && options.length > 0) {
     return (
-      <div className="flex min-h-screen flex-col px-5 py-8 safe-top"
+      <div className="animate-page-in flex min-h-screen flex-col px-5 py-8 safe-top"
         style={{ background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)" }}>
         {/* 顶部 */}
         <div className="mb-8 flex items-center justify-between">
           <button
             onClick={() => { setView("input"); setInput(""); }}
-            className="text-xs text-muted-foreground/50 hover:text-primary transition-colors"
+            className="text-xs text-foreground/35 hover:text-primary transition-colors duration-300"
           >
             ← 重新输入
           </button>
-          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground/30">
+          <span className="text-xs font-medium uppercase tracking-widest text-foreground/20">
             {currentIndex + 1} / {options.length}
           </span>
         </div>
 
         {/* 卡片 */}
         <div className="flex flex-1 flex-col items-center justify-center pb-20">
-          <OptionCard
-            option={options[currentIndex]}
-            index={currentIndex}
-            total={options.length}
-            onSelect={handleSelect}
-            onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-            onNext={() => setCurrentIndex((i) => Math.min(options.length - 1, i + 1))}
-          />
+          <div className="animate-card-in w-full">
+            <OptionCard
+              option={options[currentIndex]}
+              index={currentIndex}
+              total={options.length}
+              onSelect={handleSelect}
+              onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+              onNext={() => setCurrentIndex((i) => Math.min(options.length - 1, i + 1))}
+            />
+          </div>
         </div>
 
         {/* 底部提示 */}
-        <p className="text-center text-xs text-muted-foreground/25">
+        <p className="text-center text-xs text-foreground/15">
           左右滑动切换选项
         </p>
       </div>
@@ -272,9 +274,9 @@ export default function Home() {
     const others = decisionData.options.filter((_, i) => i !== selectedIndex);
 
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-background px-6 text-center safe-top safe-bottom overflow-hidden">
+      <div className="animate-page-in flex min-h-screen flex-col items-center justify-center gap-5 bg-background px-6 text-center safe-top safe-bottom overflow-hidden">
         {/* 阶段 1: 高光扫过 */}
-        <div className="animate-glow-sweep absolute inset-0 pointer-events-none" />
+        <div className="animate-glow-sweep absolute inset-0" />
 
         {/* 阶段 2: 胜出者放大+光晕 */}
         <div className="animate-stage-win relative z-10">
@@ -284,7 +286,7 @@ export default function Home() {
         </div>
 
         {/* 阶段 3: 印章盖下 */}
-        <p className="animate-stamp relative z-10 text-lg font-black uppercase tracking-[0.4em] text-primary opacity-90"
+        <p className="animate-stamp relative z-10 text-lg font-black uppercase tracking-[0.4em] text-primary/90"
            style={{ transform: "rotate(-5deg)" }}>
           决定时刻
         </p>
@@ -405,14 +407,14 @@ export default function Home() {
           )}
         </div>
 
-        {/* 快捷胶囊 */}
+        {/* 快捷胶囊 —— 交错入场 */}
         {!input && (
-          <div className="mb-8 grid animate-float-up grid-cols-2 gap-2">
+          <div className="mb-8 grid animate-float-up stagger grid-cols-2 gap-2">
             {CAPSULES.map((c) => (
               <button
                 key={c.label}
                 onClick={() => handleCapsule(c.label)}
-                className="flex items-center gap-2 rounded-2xl border border-foreground/6 bg-white/60 px-4 py-3 text-sm font-medium text-foreground/65 backdrop-blur-sm transition-all hover:border-primary/30 hover:text-primary hover:bg-white hover:shadow-md active:scale-[0.97]"
+                className="gpu flex items-center gap-2 rounded-2xl border border-foreground/6 bg-white/60 px-4 py-3 text-sm font-medium text-foreground/65 backdrop-blur-sm transition-all duration-300 ease-out-expo hover:border-primary/30 hover:text-primary hover:bg-white hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97]"
               >
                 <span className="text-lg">{c.icon}</span>
                 <span className="truncate">{c.label}</span>
@@ -421,13 +423,13 @@ export default function Home() {
           </div>
         )}
 
-        {/* 悬浮动作条 */}
+        {/* 悬浮动作条 —— 弹簧滑入 */}
         {input.trim().length >= 3 && (
-          <div className="animate-float-up fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 gap-3">
+          <div className="animate-slide-up fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 gap-3">
             <Button
               onClick={() => { setMode("single"); handleSingle(); }}
               size="lg"
-              className="gap-2 rounded-full px-8 shadow-lg shadow-primary/20"
+              className="gpu gap-2 rounded-full px-8 shadow-lg shadow-primary/20 transition-all duration-300 ease-out-expo hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-95"
             >
               <Sparkles className="h-4 w-4" />
               帮我决定
@@ -436,7 +438,7 @@ export default function Home() {
               onClick={() => { setMode("multi"); handleMulti(); }}
               variant="outline"
               size="lg"
-              className="gap-2 rounded-full px-8 shadow-sm"
+              className="gpu gap-2 rounded-full px-8 shadow-sm backdrop-blur-sm transition-all duration-300 ease-out-expo hover:shadow-md hover:-translate-y-1 active:scale-95"
             >
               <Users className="h-4 w-4" />
               邀请朋友

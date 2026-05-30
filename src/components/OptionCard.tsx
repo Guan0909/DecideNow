@@ -70,8 +70,9 @@ export function OptionCard({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         style={{
-          transform: `translateX(${swipeX * 0.4}px) rotate(${swipeX * 0.015}deg)`,
-          transition: swiping ? "none" : "transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.2)",
+          transform: `translateX(${swipeX * 0.4}px) rotate(${swipeX * 0.015}deg) translateZ(0)`,
+          transition: swiping ? "none" : "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          willChange: swiping ? "transform" : "auto",
         }}
       >
         <div className="glass rounded-3xl overflow-hidden">
