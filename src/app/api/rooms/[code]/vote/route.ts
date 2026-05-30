@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/admin";
+import { getSupabase } from "@/lib/supabase/admin";
 
 export async function POST(
   request: Request,
@@ -33,7 +33,7 @@ export async function POST(
     }
 
     // 创建投票
-    const { data: vote, error: vErr } = await supabase.from("Vote").insert({
+    const { data: vote, error: vErr } = await getSupabase().from("Vote").insert({
       id: crypto.randomUUID(),
       optionId,
       reason: reason || null,
@@ -43,8 +43,8 @@ export async function POST(
     if (vErr) throw new Error(vErr.message);
 
     // 更新票数
-    const { data: opt } = await supabase.from("Option").select("voteCount").eq("id", optionId).single();
-    await supabase.from("Option").update({ voteCount: ((opt?.voteCount as number) || 0) + 1 }).eq("id", optionId);
+    const { data: opt } = await getSupabase().from("Option").select("voteCount").eq("id", optionId).single();
+    await getSupabase().from("Option").update({ voteCount: ((opt?.voteCount as number) || 0) + 1 }).eq("id", optionId);
 
     return NextResponse.json({ success: true, voteId: vote.id }, { status: 201 });
   } catch (error) {

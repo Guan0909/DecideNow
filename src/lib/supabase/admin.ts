@@ -1,9 +1,18 @@
-// Supabase 服务端客户端（仅 API Routes 使用，浏览器不可访问）
+// Supabase 服务端客户端（仅 API Routes 使用）
 import { createClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+let _client: SupabaseClient | null = null;
 
-export const supabase = createClient(supabaseUrl, serviceRoleKey, {
-  auth: { persistSession: false },
-});
+export function getSupabase(): SupabaseClient {
+  if (_client) return _client;
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url) throw new Error("NEXT_PUBLIC_SUPABASE_URL 未配置");
+  if (!key) throw new Error("SUPABASE_SERVICE_ROLE_KEY 未配置");
+
+  _client = createClient(url, key, { auth: { persistSession: false } });
+  return _client;
+}

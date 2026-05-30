@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/admin";
+import { getSupabase } from "@/lib/supabase/admin";
 import { generateShareCode } from "@/lib/utils";
 
 export async function POST(request: Request) {
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     // 生成唯一分享码
     let shareCode = generateShareCode();
     for (let i = 0; i < 5; i++) {
-      const { data } = await supabase.from("Room").select("id").eq("shareCode", shareCode).maybeSingle();
+      const { data } = await getSupabase().from("Room").select("id").eq("shareCode", shareCode).maybeSingle();
       if (!data) break;
       shareCode = generateShareCode();
     }
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     const decisionId = crypto.randomUUID();
 
     // 创建 Decision
-    const { error: dErr } = await supabase.from("Decision").insert({
+    const { error: dErr } = await getSupabase().from("Decision").insert({
       id: decisionId, title, mode: "MULTI", status: "PENDING",
     });
     if (dErr) throw new Error("决策创建失败: " + dErr.message);
@@ -38,11 +38,11 @@ export async function POST(request: Request) {
       sortOrder: i,
       voteCount: 0,
     }));
-    const { error: oErr } = await supabase.from("Option").insert(optionRows);
+    const { error: oErr } = await getSupabase().from("Option").insert(optionRows);
     if (oErr) throw new Error("选项创建失败: " + oErr.message);
 
     // 创建 Room
-    const { error: rErr } = await supabase.from("Room").insert({
+    const { error: rErr } = await getSupabase().from("Room").insert({
       id: crypto.randomUUID(),
       shareCode,
       decisionId,

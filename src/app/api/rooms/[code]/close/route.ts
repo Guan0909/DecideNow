@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/admin";
+import { getSupabase } from "@/lib/supabase/admin";
 
 export async function POST(
   _request: Request,
@@ -14,8 +14,8 @@ export async function POST(
     if (room.closedAt) return NextResponse.json({ error: "投票已截止" }, { status: 400 });
 
     const now = new Date().toISOString();
-    await supabase.from("Room").update({ closedAt: now }).eq("shareCode", code);
-    await supabase.from("Decision").update({ status: "COMPLETED", completedAt: now }).eq("id", room.decisionId);
+    await getSupabase().from("Room").update({ closedAt: now }).eq("shareCode", code);
+    await getSupabase().from("Decision").update({ status: "COMPLETED", completedAt: now }).eq("id", room.decisionId);
 
     return NextResponse.json({ success: true });
   } catch {
