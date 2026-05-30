@@ -5,10 +5,14 @@ import { Button } from "@/components/ui/button";
 import {
   Sparkles,
   Users,
-  ArrowRight,
+  CheckCircle2,
+  Share2,
+  RotateCcw,
+  Navigation,
 } from "lucide-react";
 import type { DecisionOption } from "@/lib/types";
 import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
+import { OptionCard } from "@/components/OptionCard";
 
 /* ============================================
    打字机 Hook
@@ -167,80 +171,141 @@ export default function Home() {
   }
 
   /* ========================================
-     Cards (step 3 will enhance)
+     Cards — Tinder 式画廊
      ======================================== */
   if (view === "cards" && options.length > 0) {
     return (
-      <div className="flex min-h-screen flex-col bg-background px-5 py-8">
-        <div className="mb-2 text-center text-xs font-medium uppercase tracking-widest text-muted-foreground/40">
-          第 {currentIndex + 1} / {options.length} 个选项
+      <div className="flex min-h-screen flex-col bg-background px-5 py-8 safe-top">
+        {/* 顶部 */}
+        <div className="mb-8 flex items-center justify-between">
+          <button
+            onClick={() => { setView("input"); setInput(""); }}
+            className="text-xs text-muted-foreground/50 hover:text-primary transition-colors"
+          >
+            ← 重新输入
+          </button>
+          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground/30">
+            {currentIndex + 1} / {options.length}
+          </span>
         </div>
-        <div className="flex flex-1 flex-col items-center justify-center">
-          <div className="glass w-full max-w-sm rounded-3xl p-8 text-center">
-            <div className="mb-1 text-xs font-bold uppercase tracking-wider text-primary">最佳推荐</div>
-            <h2 className="mb-3 text-2xl font-extrabold text-foreground">{options[currentIndex].name}</h2>
-            <p className="mb-6 text-sm italic leading-relaxed text-muted-foreground">
-              &ldquo;{options[currentIndex].description}&rdquo;
-            </p>
-            <div className="mb-6 flex flex-wrap justify-center gap-2">
-              {options[currentIndex].priceHint && (
-                <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-                  💰 {options[currentIndex].priceHint}
-                </span>
-              )}
-              {options[currentIndex].locationHint && (
-                <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-                  📍 {options[currentIndex].locationHint}
-                </span>
-              )}
-            </div>
-            <Button onClick={handleSelect} size="lg" className="w-full gap-2">
-              就它了 <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-          {/* nav */}
-          <div className="mt-6 flex gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={currentIndex === 0}
-              onClick={() => setCurrentIndex((i) => i - 1)}
-            >
-              ← 上一个
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={currentIndex >= options.length - 1}
-              onClick={() => setCurrentIndex((i) => i + 1)}
-            >
-              下一个 →
-            </Button>
-          </div>
+
+        {/* 卡片 */}
+        <div className="flex flex-1 flex-col items-center justify-center pb-20">
+          <OptionCard
+            option={options[currentIndex]}
+            index={currentIndex}
+            total={options.length}
+            onSelect={handleSelect}
+            onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+            onNext={() => setCurrentIndex((i) => Math.min(options.length - 1, i + 1))}
+            isSelected={false}
+          />
         </div>
+
+        {/* 底部提示 */}
+        <p className="text-center text-xs text-muted-foreground/25">
+          左右滑动切换选项
+        </p>
       </div>
     );
   }
 
   /* ========================================
-     Result (step 5 will enhance)
+     Result — 结算高光动画
      ======================================== */
   if (view === "result" && decisionData) {
     const sel = (decisionData.options as Array<Record<string, unknown>>)[selectedIndex];
+    const others = (decisionData.options as Array<Record<string, unknown>>)
+      .filter((_, i) => i !== selectedIndex);
+
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-8 text-center">
-        <div className="text-6xl">🏆</div>
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">决定时刻</p>
-        <h2 className="text-3xl font-extrabold text-foreground">{sel?.name as string}</h2>
-        <p className="text-sm italic text-muted-foreground">&ldquo;{sel?.description as string}&rdquo;</p>
-        <div className="flex gap-3">
-          <Button onClick={() => { setView("input"); setInput(""); }} variant="outline">再来一次</Button>
-          <Button onClick={() => {
-            const text = `🎯 DecideNow 帮我做了决定！${sel?.name as string}`;
-            navigator.clipboard.writeText(text);
-            alert("已复制！");
-          }}>📤 分享</Button>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-8 text-center safe-top safe-bottom">
+        {/* 胜出动画 */}
+        <div className="animate-breathe">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mx-auto">
+            <CheckCircle2 className="h-10 w-10 text-primary" />
+          </div>
         </div>
+
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">决定时刻</p>
+
+        {/* 胜出选项放大 */}
+        <h2 className="animate-float-up text-3xl font-extrabold text-foreground">
+          {sel?.name as string}
+        </h2>
+        <p className="animate-float-up text-sm italic leading-relaxed text-muted-foreground max-w-xs">
+          &ldquo;{sel?.description as string}&rdquo;
+        </p>
+
+        {/* 未选中：褪色 */}
+        {others.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-3 opacity-40">
+            {others.map((o, i) => (
+              <span key={i} className="text-xs text-muted-foreground line-through">
+                {o.name as string}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* 信息标签 */}
+        <div className="flex gap-2">
+          {sel?.priceHint && (
+            <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+              💰 {sel.priceHint as string}
+            </span>
+          )}
+          {sel?.locationHint && (
+            <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+              📍 {sel.locationHint as string}
+            </span>
+          )}
+        </div>
+
+        {/* 操作 */}
+        <div className="flex gap-3 mt-2">
+          {sel?.locationHint && (
+            <Button
+              onClick={() => window.open(
+                `https://uri.amap.com/search?keyword=${encodeURIComponent(sel.name as string)}`,
+                "_blank"
+              )}
+              size="lg"
+              className="gap-2 rounded-2xl"
+            >
+              <Navigation className="h-4 w-4" /> 导航
+            </Button>
+          )}
+          <Button
+            onClick={async () => {
+              const text = `🎯 DecideNow 帮我做了决定！\n${sel?.name as string}\n${sel?.description as string}`;
+              if (navigator.share) {
+                await navigator.share({ title: "我的决定", text }).catch(() => {});
+              } else {
+                await navigator.clipboard.writeText(text);
+                alert("已复制分享内容 📋");
+              }
+            }}
+            variant="outline"
+            size="lg"
+            className="gap-2 rounded-2xl"
+          >
+            <Share2 className="h-4 w-4" /> 分享
+          </Button>
+          <Button
+            onClick={() => { setView("input"); setInput(""); }}
+            variant="ghost"
+            size="lg"
+            className="gap-2 rounded-2xl"
+          >
+            <RotateCcw className="h-4 w-4" /> 再来
+          </Button>
+        </div>
+
+        {/* 品牌 */}
+        <p className="mt-6 text-xs text-muted-foreground/25">
+          由 <span className="font-semibold text-primary">DecideNow</span> 生成
+        </p>
       </div>
     );
   }

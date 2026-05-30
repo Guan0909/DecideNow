@@ -1,17 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScoreCard } from "@/components/ScoreCard";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  MapPin,
-  DollarSign,
-  ThumbsUp,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import type { DecisionOption } from "@/lib/types";
 
 interface OptionCardProps {
@@ -21,7 +12,6 @@ interface OptionCardProps {
   onSelect: () => void;
   onPrev: () => void;
   onNext: () => void;
-  isSelected: boolean;
 }
 
 export function OptionCard({
@@ -31,40 +21,36 @@ export function OptionCard({
   onSelect,
   onPrev,
   onNext,
-  isSelected,
 }: OptionCardProps) {
-  const touchStartX = useRef(0);
-  const [offsetX, setOffsetX] = useState(0);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const [swipeX, setSwipeX] = useState(0);
   const [swiping, setSwiping] = useState(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     setSwiping(true);
   };
-
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!swiping) return;
-    const diff = e.touches[0].clientX - touchStartX.current;
-    setOffsetX(diff * 0.5); // 阻尼
+    if (!touchStart.current) return;
+    setSwipeX(e.touches[0].clientX - touchStart.current.x);
   };
-
   const handleTouchEnd = () => {
     setSwiping(false);
-    if (offsetX < -60) {
-      onNext();
-    } else if (offsetX > 60) {
-      onPrev();
+    if (Math.abs(swipeX) > 80) {
+      if (swipeX < 0 && index < total - 1) onNext();
+      else if (swipeX > 0 && index > 0) onPrev();
     }
-    setOffsetX(0);
+    setSwipeX(0);
+    touchStart.current = null;
   };
 
   return (
-    <div className="relative w-full max-w-sm mx-auto">
-      {/* 导航按钮 */}
+    <div className="relative mx-auto w-full max-w-sm select-none">
+      {/* 导航箭头 */}
       {index > 0 && (
         <button
           onClick={onPrev}
-          className="absolute -left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-lg shadow-black/10 transition-all hover:scale-110 active:scale-95"
+          className="absolute -left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-sm backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
         >
           <ChevronLeft className="h-5 w-5 text-foreground" />
         </button>
@@ -72,7 +58,7 @@ export function OptionCard({
       {index < total - 1 && (
         <button
           onClick={onNext}
-          className="absolute -right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-lg shadow-black/10 transition-all hover:scale-110 active:scale-95"
+          className="absolute -right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-sm backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
         >
           <ChevronRight className="h-5 w-5 text-foreground" />
         </button>
@@ -84,89 +70,90 @@ export function OptionCard({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         style={{
-          transform: `translateX(${offsetX}px) rotate(${offsetX * 0.02}deg)`,
-          transition: swiping ? "none" : "transform 0.3s ease-out",
+          transform: `translateX(${swipeX * 0.4}px) rotate(${swipeX * 0.015}deg)`,
+          transition: swiping ? "none" : "transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.2)",
         }}
       >
-        <Card
-          className={`overflow-hidden transition-all duration-300 ${
-            isSelected
-              ? "ring-2 ring-primary shadow-xl shadow-primary/20"
-              : "hover:shadow-lg"
-          }`}
-        >
+        <div className="glass rounded-3xl overflow-hidden">
           {/* 排名角标 */}
-          <div className="absolute left-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shadow-md">
+          <div className="absolute left-5 top-5 flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
             {index + 1}
           </div>
 
-          {/* 推荐标签 */}
+          {/* 最佳推荐 */}
           {index === 0 && (
-            <div className="absolute right-4 top-4">
-              <Badge className="gap-1 bg-amber-400 text-amber-900 hover:bg-amber-400">
-                <ThumbsUp className="h-3 w-3" />
-                最佳推荐
-              </Badge>
+            <div className="absolute right-5 top-5 rounded-full bg-primary/10 px-3 py-1 text-[10px] font-semibold text-primary">
+              最佳推荐
             </div>
           )}
 
-          <CardContent className="p-6 pt-14">
-            {/* 选项名 */}
-            <h2 className="mb-2 text-xl font-bold text-foreground">
+          <div className="p-8 pt-16">
+            {/* 第一层：情感定调 */}
+            <h2 className="mb-3 text-center text-2xl font-extrabold text-foreground">
               {option.name}
             </h2>
-
-            {/* AI 推荐语 */}
-            <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
-              {option.description}
+            <p className="mb-6 text-center text-sm italic leading-relaxed text-muted-foreground">
+              &ldquo;{option.description}&rdquo;
             </p>
 
-            {/* 评分 */}
+            {/* 第二层：理性校验——能量条 */}
             {option.scoreCard && (
-              <div className="mb-4 rounded-xl bg-muted/50 p-3">
-                <ScoreCard scoreCard={option.scoreCard} />
+              <div className="mb-6 flex flex-col gap-2 rounded-2xl bg-muted/50 p-4">
+                {[
+                  { label: "口味匹配", key: "taste" as const },
+                  { label: "氛围匹配", key: "ambiance" as const },
+                  { label: "预算友好", key: "budget" as const },
+                ].map(({ label, key }) => {
+                  const val = option.scoreCard![key];
+                  return (
+                    <div key={key} className="flex items-center gap-3">
+                      <span className="w-16 shrink-0 text-xs text-muted-foreground">{label}</span>
+                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-primary transition-all duration-700"
+                          style={{ width: `${(val / 5) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-foreground">{val}/5</span>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
-            {/* 信息标签 */}
-            <div className="mb-5 flex flex-wrap gap-2">
+            {/* 标签组 */}
+            <div className="mb-6 flex flex-wrap justify-center gap-2">
               {option.priceHint && (
-                <Badge variant="secondary" className="gap-1">
-                  <DollarSign className="h-3 w-3" />
-                  {option.priceHint}
-                </Badge>
+                <span className="rounded-full border border-border/30 bg-white/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm">
+                  💰 {option.priceHint}
+                </span>
               )}
               {option.locationHint && (
-                <Badge variant="outline" className="gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {option.locationHint}
-                </Badge>
+                <span className="rounded-full border border-border/30 bg-white/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm">
+                  📍 {option.locationHint}
+                </span>
               )}
             </div>
 
-            {/* 选择按钮 */}
-            <Button
-              onClick={onSelect}
-              size="lg"
-              className="w-full rounded-2xl text-base font-semibold shadow-lg shadow-primary/25 transition-all hover:shadow-xl active:scale-[0.98]"
-            >
-              就它了！
+            {/* 第三层：行动转化 */}
+            <Button onClick={onSelect} size="lg" className="w-full gap-2 rounded-2xl text-base">
+              就它了 <ArrowRight className="h-4 w-4" />
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      {/* 页码指示器 */}
+      {/* 页码 */}
       <div className="mt-4 flex items-center justify-center gap-1.5">
         {Array.from({ length: total }).map((_, i) => (
           <button
             key={i}
             onClick={() => {
-              if (i < index) onPrev();
-              if (i > index) onNext();
+              if (i < index && index > 0) onPrev();
+              if (i > index && index < total - 1) onNext();
             }}
-            className={`h-2 rounded-full transition-all ${
-              i === index ? "w-6 bg-primary" : "w-2 bg-muted-foreground/20"
+            className={`rounded-full transition-all duration-300 ${
+              i === index ? "h-2 w-6 bg-primary" : "h-2 w-2 bg-muted-foreground/15"
             }`}
           />
         ))}
