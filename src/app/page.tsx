@@ -14,6 +14,21 @@ import type { DecisionOption } from "@/lib/types";
 import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
 import { OptionCard } from "@/components/OptionCard";
 
+interface ResultOption {
+  id: string;
+  name: string;
+  description: string;
+  priceHint: string | null;
+  locationHint: string | null;
+  scoreCard: string | null;
+}
+interface ResultData {
+  title: string;
+  completedAt: string;
+  options: ResultOption[];
+  selectedId: string;
+}
+
 /* ============================================
    打字机 Hook
    ============================================ */
@@ -74,7 +89,7 @@ export default function Home() {
   const [options, setOptions] = useState<DecisionOption[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [decisionData, setDecisionData] = useState<Record<string, unknown> | null>(null);
+  const [decisionData, setDecisionData] = useState<ResultData | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [mode, setMode] = useState<"single" | "multi">("single");
   const placeholder = useTypewriter([
@@ -213,9 +228,8 @@ export default function Home() {
      Result — 结算高光动画
      ======================================== */
   if (view === "result" && decisionData) {
-    const sel = (decisionData.options as Array<Record<string, unknown>>)[selectedIndex];
-    const others = (decisionData.options as Array<Record<string, unknown>>)
-      .filter((_, i) => i !== selectedIndex);
+    const sel = decisionData.options[selectedIndex];
+    const others = decisionData.options.filter((_, i) => i !== selectedIndex);
 
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-8 text-center safe-top safe-bottom">
@@ -230,10 +244,10 @@ export default function Home() {
 
         {/* 胜出选项放大 */}
         <h2 className="animate-float-up text-3xl font-extrabold text-foreground">
-          {sel?.name as string}
+          {sel.name}
         </h2>
         <p className="animate-float-up text-sm italic leading-relaxed text-muted-foreground max-w-xs">
-          &ldquo;{sel?.description as string}&rdquo;
+          &ldquo;{sel.description}&rdquo;
         </p>
 
         {/* 未选中：褪色 */}
@@ -241,7 +255,7 @@ export default function Home() {
           <div className="flex flex-wrap justify-center gap-3 opacity-40">
             {others.map((o, i) => (
               <span key={i} className="text-xs text-muted-foreground line-through">
-                {o.name as string}
+                {o.name}
               </span>
             ))}
           </div>
@@ -249,24 +263,24 @@ export default function Home() {
 
         {/* 信息标签 */}
         <div className="flex gap-2">
-          {sel?.priceHint && (
+          {sel.priceHint && (
             <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-              💰 {sel.priceHint as string}
+              💰 {sel.priceHint}
             </span>
           )}
-          {sel?.locationHint && (
+          {sel.locationHint && (
             <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-              📍 {sel.locationHint as string}
+              📍 {sel.locationHint}
             </span>
           )}
         </div>
 
         {/* 操作 */}
         <div className="flex gap-3 mt-2">
-          {sel?.locationHint && (
+          {sel.locationHint && (
             <Button
               onClick={() => window.open(
-                `https://uri.amap.com/search?keyword=${encodeURIComponent(sel.name as string)}`,
+                `https://uri.amap.com/search?keyword=${encodeURIComponent(sel.name)}`,
                 "_blank"
               )}
               size="lg"
@@ -277,7 +291,7 @@ export default function Home() {
           )}
           <Button
             onClick={async () => {
-              const text = `🎯 DecideNow 帮我做了决定！\n${sel?.name as string}\n${sel?.description as string}`;
+              const text = `🎯 DecideNow 帮我做了决定！\n${sel.name}\n${sel.description}`;
               if (navigator.share) {
                 await navigator.share({ title: "我的决定", text }).catch(() => {});
               } else {
