@@ -38,7 +38,8 @@
       "Bash(nslookup github.com)",
       "Bash(GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push -u origin main)",
       "Bash(git ls-remote *)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --connect-timeout 5 https://github.com)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" --connect-timeout 5 https://github.com)",
+      "WebFetch(domain:decidenow-99522kh1x-guan09-s-projects.vercel.app)"
     ],
     "additionalDirectories": [
       "d:\\DecideNow\\src\\app\\api\\decisions",
