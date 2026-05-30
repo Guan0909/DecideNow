@@ -9,33 +9,33 @@
 
 @layer base {
   :root {
-    --background: 40 15% 97%;           /* #F9F7F2 暖调奶白（告别低级平涂） */
-    --foreground: 0 0% 8%;              /* #141414 更深黑，拒绝发虚 */
-    --muted: 40 10% 93%;                /* #EFEDE8 暖灰底 */
-    --muted-foreground: 0 0% 35%;       /* #595959 影灰加黑，AA 级对比 */
+    --background: 40 15% 97%;           /* #F9F7F2 暖调奶白 */
+    --foreground: 0 0% 7%;              /* #121212 更纯黑 */
+    --muted: 40 8% 92%;                 /* #EDEAE3 暖灰 */
+    --muted-foreground: 0 0% 38%;       /* #616161 影灰 */
 
-    --primary: 155 18% 42%;             /* #5C8370 深抹茶（高级克制感） */
+    --primary: 155 18% 40%;             /* #557A68 深抹茶 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 12% 48%;           /* #6E8396 雾霾蓝深 */
+    --secondary: 210 12% 46%;           /* #687D90 雾霾蓝深 */
     --secondary-foreground: 0 0% 100%;
 
-    --card: 0 0% 100% / 0.7;
+    --card: 0 0% 100% / 0.65;
     --card-foreground: 0 0% 10%;
-    --popover: 0 0% 100% / 0.85;
+    --popover: 0 0% 100% / 0.88;
     --popover-foreground: 0 0% 10%;
 
-    --border: 0 0% 0% / 0.06;
-    --input: 0 0% 0% / 0.04;
-    --ring: 140 12% 48% / 0.4;
+    --border: 0 0% 0% / 0.05;
+    --input: 0 0% 0% / 0.03;
+    --ring: 155 18% 40% / 0.35;
 
-    --destructive: 0 50% 50%;
+    --destructive: 0 48% 48%;
     --destructive-foreground: 0 0% 100%;
-    --accent: 208 9% 54% / 0.1;
-    --accent-foreground: 208 9% 30%;
+    --accent: 210 12% 46% / 0.08;
+    --accent-foreground: 210 12% 30%;
 
-    --radius: 1rem;
-    --shadow-soft: 0 4px 24px rgba(0,0,0,0.04);
-    --shadow-card: 0 2px 12px rgba(0,0,0,0.03);
+    --radius: 1.125rem;
+    --shadow-soft: 0 2px 20px rgba(0,0,0,0.035), 0 8px 40px rgba(0,0,0,0.02);
+    --shadow-card: 0 1px 8px rgba(0,0,0,0.025), 0 4px 20px rgba(0,0,0,0.015);
   }
 
   /* 暗色模式：暮霭之夜 */
@@ -83,26 +83,30 @@
 @layer components {
   .glass {
     background: hsl(var(--card));
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
     border: 1px solid hsl(var(--border));
     box-shadow: var(--shadow-soft);
     border-radius: var(--radius);
   }
-  /* 低端机无 backdrop-filter 支持 → 纯色半透明 */
   @supports not (backdrop-filter: blur(1px)) {
-    .glass {
-      background: hsl(var(--card) / 0.95);
-    }
+    .glass { background: hsla(0, 0%, 100%, 0.92); }
   }
 
   .glass-strong {
-    background: hsl(var(--card) / 0.85);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background: hsl(var(--card) / 0.82);
+    backdrop-filter: blur(28px) saturate(1.3);
+    -webkit-backdrop-filter: blur(28px) saturate(1.3);
     border: 1px solid hsl(var(--border));
     box-shadow: var(--shadow-soft);
     border-radius: calc(var(--radius) + 4px);
+  }
+
+  /* 精致分割线 */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--border)) 20%, hsl(var(--border)) 80%, transparent);
+    border: none;
   }
 
   .input-zen {
