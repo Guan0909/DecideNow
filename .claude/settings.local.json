@@ -27,7 +27,16 @@
       "Bash(npx shadcn@latest add input textarea badge card separator -y)",
       "Bash(mkdir -p src/app/api/decisions/\\\\[id\\\\] src/app/decide/\\\\[id\\\\]/card)",
       "Bash(sed -i 's/import { prisma } from \"@\\\\/lib\\\\/prisma\"/import { getPrisma } from \"@\\\\/lib\\\\/prisma\"/g; s/await prisma\\\\./await getPrisma\\(\\)./g; s/const prisma/const _unused/g' src/app/api/decisions/route.ts src/app/api/decisions/\\\\[id\\\\]/route.ts 2>&1)",
-      "Bash(mkdir -p src/app/api/rooms/\\\\[code\\\\]/vote src/app/api/rooms/\\\\[code\\\\]/close src/app/room/\\\\[code\\\\]/result)"
+      "Bash(mkdir -p src/app/api/rooms/\\\\[code\\\\]/vote src/app/api/rooms/\\\\[code\\\\]/close src/app/room/\\\\[code\\\\]/result)",
+      "Bash(xargs wc -l)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(gh auth *)",
+      "Bash(git -c http.version=HTTP/1.1 push -u origin main)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\" --connect-timeout 10 https://github.com)",
+      "Bash(nslookup github.com)",
+      "Bash(GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push -u origin main)"
     ],
     "additionalDirectories": [
       "d:\\DecideNow\\src\\app\\api\\decisions",
