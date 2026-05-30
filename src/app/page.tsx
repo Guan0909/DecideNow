@@ -9,6 +9,7 @@ import {
   Share2,
   RotateCcw,
   Navigation,
+  MapPin,
 } from "lucide-react";
 import type { DecisionOption } from "@/lib/types";
 import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
@@ -100,11 +101,35 @@ export default function Home() {
   const [decisionData, setDecisionData] = useState<ResultData | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [mode, setMode] = useState<"single" | "multi">("single");
+  const [location, setLocation] = useState<string | null>(null);
   const placeholder = useTypewriter([
     "告诉 AI 你的想法，或输入选项...",
     "比如：三个人，人均80，吃辣的...",
     "比如：周末去哪玩？户外自驾...",
   ]);
+
+  // 获取位置
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=67c4a2b0e290a444558749bof6c1f09`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const city = data.address?.city || data.address?.town || data.address?.county || "";
+            const district = data.address?.suburb || data.address?.city_district || "";
+            setLocation(district || city || null);
+          }
+        } catch { /* 定位失败不影响使用 */ }
+      },
+      () => { /* 用户拒绝定位 */ },
+      { timeout: 5000, enableHighAccuracy: false }
+    );
+  }, []);
 
   /* ---------- 胶囊点击 ---------- */
   const handleCapsule = useCallback((text: string) => {
@@ -131,7 +156,7 @@ export default function Home() {
           model: "deepseek-v4-flash",
           messages: [
             { role: "system", content: GENERATE_SYSTEM_PROMPT },
-            { role: "user", content: `用户需求：${input.trim()}\n\n请生成 3 个决策选项。` },
+            { role: "user", content: `用户需求：${input.trim()}${location ? `\n用户当前位置：${location}` : ""}\n\n请根据用户位置推荐附近真实地点，生成 3 个决策选项。` },
           ],
           temperature: 0.7,
           max_tokens: 800,
@@ -385,6 +410,14 @@ export default function Home() {
         <h1 className="mb-10 text-[2.75rem] font-black leading-[1.1] tracking-[-0.02em] text-foreground">
           今天在纠结<br />什么？
         </h1>
+
+        {/* 位置标签 */}
+        {location && (
+          <div className="mb-4 flex items-center gap-1.5 text-xs font-medium text-muted-foreground/60">
+            <MapPin className="h-3 w-3" />
+            <span>基于你在 <strong className="text-foreground/70">{location}</strong> 附近推荐</span>
+          </div>
+        )}
 
         {/* 无边界输入框 */}
         <div className="relative mb-6">
