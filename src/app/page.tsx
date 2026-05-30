@@ -32,9 +32,9 @@ export default function Home() {
     sessionStorage.setItem("decidenow_mode", mode);
 
     if (mode === "single") {
-      router.push("/decide/new");
+      window.location.href = "/decide/new";
     } else {
-      router.push("/room/create");
+      window.location.href = "/room/create";
     }
   };
 
