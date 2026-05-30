@@ -232,27 +232,33 @@ export default function Home() {
     const others = decisionData.options.filter((_, i) => i !== selectedIndex);
 
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-8 text-center safe-top safe-bottom">
-        {/* 胜出动画 */}
-        <div className="animate-breathe">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mx-auto">
-            <CheckCircle2 className="h-10 w-10 text-primary" />
+      <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-background px-6 text-center safe-top safe-bottom overflow-hidden">
+        {/* 阶段 1: 高光扫过 */}
+        <div className="animate-glow-sweep absolute inset-0 pointer-events-none" />
+
+        {/* 阶段 2: 胜出者放大+光晕 */}
+        <div className="animate-stage-win relative z-10">
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 mx-auto mb-4">
+            <CheckCircle2 className="h-12 w-12 text-primary" />
           </div>
         </div>
 
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">决定时刻</p>
+        {/* 阶段 3: 印章盖下 */}
+        <p className="animate-stamp relative z-10 text-lg font-black uppercase tracking-[0.4em] text-primary opacity-90"
+           style={{ transform: "rotate(-5deg)" }}>
+          决定时刻
+        </p>
 
-        {/* 胜出选项放大 */}
-        <h2 className="animate-float-up text-3xl font-extrabold text-foreground">
+        <h2 className="animate-float-up relative z-10 text-4xl font-extrabold leading-tight text-foreground">
           {sel.name}
         </h2>
-        <p className="animate-float-up text-sm italic leading-relaxed text-muted-foreground max-w-xs">
+        <p className="animate-float-up relative z-10 text-base italic leading-relaxed text-muted-foreground max-w-xs">
           &ldquo;{sel.description}&rdquo;
         </p>
 
-        {/* 未选中：褪色 */}
+        {/* 阶段 4: 失败者褪色 */}
         {others.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-3 opacity-40">
+          <div className="animate-stage-fade flex flex-wrap justify-center gap-3">
             {others.map((o, i) => (
               <span key={i} className="text-xs text-muted-foreground line-through">
                 {o.name}
@@ -261,62 +267,36 @@ export default function Home() {
           </div>
         )}
 
-        {/* 信息标签 */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 relative z-10">
           {sel.priceHint && (
-            <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-              💰 {sel.priceHint}
-            </span>
+            <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">💰 {sel.priceHint}</span>
           )}
           {sel.locationHint && (
-            <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-              📍 {sel.locationHint}
-            </span>
+            <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">📍 {sel.locationHint}</span>
           )}
         </div>
 
-        {/* 操作 */}
-        <div className="flex gap-3 mt-2">
+        <div className="flex gap-3 mt-2 relative z-10">
           {sel.locationHint && (
-            <Button
-              onClick={() => window.open(
-                `https://uri.amap.com/search?keyword=${encodeURIComponent(sel.name)}`,
-                "_blank"
-              )}
-              size="lg"
-              className="gap-2 rounded-2xl"
-            >
+            <Button onClick={() => window.open(`https://uri.amap.com/search?keyword=${encodeURIComponent(sel.name)}`, "_blank")} size="lg" className="gap-2 rounded-2xl">
               <Navigation className="h-4 w-4" /> 导航
             </Button>
           )}
           <Button
             onClick={async () => {
               const text = `🎯 DecideNow 帮我做了决定！\n${sel.name}\n${sel.description}`;
-              if (navigator.share) {
-                await navigator.share({ title: "我的决定", text }).catch(() => {});
-              } else {
-                await navigator.clipboard.writeText(text);
-                alert("已复制分享内容 📋");
-              }
+              if (navigator.share) await navigator.share({ title: "我的决定", text }).catch(() => {});
+              else { await navigator.clipboard.writeText(text); alert("已复制分享内容 📋"); }
             }}
-            variant="outline"
-            size="lg"
-            className="gap-2 rounded-2xl"
-          >
+            variant="outline" size="lg" className="gap-2 rounded-2xl">
             <Share2 className="h-4 w-4" /> 分享
           </Button>
-          <Button
-            onClick={() => { setView("input"); setInput(""); }}
-            variant="ghost"
-            size="lg"
-            className="gap-2 rounded-2xl"
-          >
+          <Button onClick={() => { setView("input"); setInput(""); }} variant="ghost" size="lg" className="gap-2 rounded-2xl">
             <RotateCcw className="h-4 w-4" /> 再来
           </Button>
         </div>
 
-        {/* 品牌 */}
-        <p className="mt-6 text-xs text-muted-foreground/25">
+        <p className="mt-6 text-xs text-muted-foreground/25 relative z-10">
           由 <span className="font-semibold text-primary">DecideNow</span> 生成
         </p>
       </div>

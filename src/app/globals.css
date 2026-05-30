@@ -4,88 +4,111 @@
 
 /* ============================================
    DecideNow 2.0 — "无界之境 (Zen Space)"
-   设计系统：晨雾白 · 抹茶薄荷 · 毛玻璃
+   优化版：暗色模式 + WCAG 对比度 + 逐帧动画
    ============================================ */
 
 @layer base {
   :root {
-    /* 背景 */
-    --background: 60 5% 96%;        /* #F7F7F5 晨雾白 */
-    --foreground: 0 0% 10%;         /* #1A1A1A 曜石黑 */
-    --muted: 60 3% 94%;             /* #F0F0EE 暮霭灰 */
-    --muted-foreground: 0 0% 54%;   /* #8A8A8A 影灰 */
+    --background: 60 5% 96%;            /* #F7F7F5 晨雾白 */
+    --foreground: 0 0% 10%;             /* #1A1A1A 曜石黑 */
+    --muted: 60 3% 94%;                 /* #F0F0EE 暮霭灰 */
+    --muted-foreground: 0 0% 42%;       /* #6B6B6B 影灰（加深，WCAG AA） */
 
-    /* 强调色 */
-    --primary: 151 14% 57%;         /* #83A090 抹茶薄荷 */
+    --primary: 140 12% 48%;             /* #6B8F7A 抹茶薄荷深（突出 CTA） */
     --primary-foreground: 0 0% 100%;
-    --secondary: 208 9% 54%;        /* #7A8B99 雾霾蓝 */
+    --secondary: 208 9% 54%;            /* #7A8B99 雾霾蓝 */
     --secondary-foreground: 0 0% 100%;
 
-    /* 卡片与表面 */
-    --card: 0 0% 100% / 0.7;        /* 毛玻璃卡片 */
+    --card: 0 0% 100% / 0.7;
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100% / 0.85;
     --popover-foreground: 0 0% 10%;
 
-    /* 边框与输入 */
     --border: 0 0% 0% / 0.06;
     --input: 0 0% 0% / 0.04;
-    --ring: 151 14% 57% / 0.4;
+    --ring: 140 12% 48% / 0.4;
 
-    /* 功能色 */
     --destructive: 0 50% 50%;
     --destructive-foreground: 0 0% 100%;
     --accent: 208 9% 54% / 0.1;
     --accent-foreground: 208 9% 30%;
 
-    /* 圆角 */
     --radius: 1rem;
-
-    /* 阴影 */
-    --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.04);
-    --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.03);
+    --shadow-soft: 0 4px 24px rgba(0,0,0,0.04);
+    --shadow-card: 0 2px 12px rgba(0,0,0,0.03);
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
+  /* 暗色模式：暮霭之夜 */
+  .dark,
+  [data-theme="dark"],
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --background: 30 4% 8%;           /* #151412 暗夜底 */
+      --foreground: 40 10% 92%;         /* #EDEBE6 月光白 */
+      --muted: 30 3% 14%;               /* #242220 */
+      --muted-foreground: 40 5% 55%;    /* #91908A */
+      --primary: 140 12% 55%;           /* #7DA78D 暗色下稍亮 */
+      --primary-foreground: 0 0% 8%;
+      --secondary: 208 8% 58%;
+      --secondary-foreground: 0 0% 8%;
+      --card: 30 4% 10% / 0.8;
+      --card-foreground: 40 10% 92%;
+      --popover: 30 4% 12% / 0.9;
+      --popover-foreground: 40 10% 92%;
+      --border: 40 5% 20% / 0.5;
+      --input: 40 5% 15% / 0.6;
+      --ring: 140 12% 55% / 0.3;
+      --destructive: 0 45% 55%;
+      --accent: 208 8% 50% / 0.15;
+      --accent-foreground: 208 8% 80%;
+      --shadow-soft: 0 4px 24px rgba(0,0,0,0.3);
+      --shadow-card: 0 2px 12px rgba(0,0,0,0.2);
+    }
   }
+
+  * { @apply border-border; }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: "Inter", "PingFang SC", "Hiragino Sans GB", system-ui, -apple-system, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 /* ============================================
-   毛玻璃工具类
+   毛玻璃 — 低端机自动降级
    ============================================ */
 @layer components {
   .glass {
-    background: rgba(255, 255, 255, 0.65);
+    background: hsl(var(--card));
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-soft);
+    border-radius: var(--radius);
+  }
+  /* 低端机无 backdrop-filter 支持 → 纯色半透明 */
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass {
+      background: hsl(var(--card) / 0.95);
+    }
   }
 
   .glass-strong {
-    background: rgba(255, 255, 255, 0.8);
+    background: hsl(var(--card) / 0.85);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.06);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-soft);
+    border-radius: calc(var(--radius) + 4px);
   }
 
-  /* 无边界输入框 */
   .input-zen {
-    background: rgba(0, 0, 0, 0.02);
+    background: hsl(var(--input));
     border: none;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
     border-radius: 16px;
     padding: 16px 20px;
     font-size: 16px;
@@ -93,20 +116,23 @@
   }
   .input-zen:focus {
     outline: none;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(131, 160, 144, 0.15);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04), 0 0 0 3px hsl(var(--ring));
+  }
+  .dark .input-zen,
+  [data-theme="dark"] .input-zen {
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
   }
 
-  /* 弥散阴影卡片 */
   .card-soft {
     background: white;
     border-radius: 20px;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-card);
+    border: 1px solid hsl(var(--border));
   }
 }
 
 /* ============================================
-   动画
+   逐帧结算动画
    ============================================ */
 @layer utilities {
   /* 呼吸光晕 */
@@ -115,36 +141,64 @@
   }
   @keyframes breathe {
     0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.02); }
+    50% { opacity: 1; transform: scale(1.03); }
   }
 
-  /* 浮现 */
+  /* 浮现入场 */
   .animate-float-up {
-    animation: floatUp 0.4s ease-out;
+    animation: floatUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
   @keyframes floatUp {
-    from { opacity: 0; transform: translateY(16px); }
+    from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* 水波纹 */
-  .animate-ripple {
-    animation: ripple 0.5s ease-out;
+  /* 舞台：胜出者放大+光晕 */
+  .animate-stage-win {
+    animation: stageWin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
   }
-  @keyframes ripple {
-    from { transform: scale(0.95); opacity: 0.8; }
-    to { transform: scale(1); opacity: 1; }
+  @keyframes stageWin {
+    from { transform: scale(1); filter: brightness(1); }
+    to { transform: scale(1.05); filter: brightness(1.1); }
   }
 
-  /* 打字机光标 */
-  .cursor-typewriter {
-    animation: blink 1s step-end infinite;
+  /* 失败者褪色 */
+  .animate-stage-fade {
+    animation: stageFade 0.4s ease-out 0.1s both;
   }
-  @keyframes blink {
-    50% { opacity: 0; }
+  @keyframes stageFade {
+    from { opacity: 1; }
+    to { opacity: 0.4; }
+  }
+
+  /* 印章盖下 */
+  .animate-stamp {
+    animation: stamp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+  }
+  @keyframes stamp {
+    from { opacity: 0; transform: rotate(-15deg) scale(2); }
+    to { opacity: 1; transform: rotate(-5deg) scale(1); }
+  }
+
+  /* 卡牌入场（Tinder 式） */
+  .animate-card-in {
+    animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* 高光扫过 */
+  .animate-glow-sweep {
+    animation: glowSweep 1s ease-out 0.6s both;
+  }
+  @keyframes glowSweep {
+    0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+    50% { box-shadow: 0 0 60px 20px hsl(var(--primary) / 0.15); }
+    100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
   }
 }
 
-/* 安全区域 */
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 .safe-top { padding-top: env(safe-area-inset-top); }

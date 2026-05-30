@@ -88,11 +88,11 @@ export function OptionCard({
           )}
 
           <div className="p-8 pt-16">
-            {/* 第一层：情感定调 */}
-            <h2 className="mb-3 text-center text-2xl font-extrabold text-foreground">
+            {/* 第一层：情感定调 — 大者极大 */}
+            <h2 className="mb-3 text-center text-3xl font-extrabold leading-tight text-foreground">
               {option.name}
             </h2>
-            <p className="mb-6 text-center text-sm italic leading-relaxed text-muted-foreground">
+            <p className="mb-6 text-center text-xs italic leading-relaxed text-muted-foreground/75">
               &ldquo;{option.description}&rdquo;
             </p>
 
