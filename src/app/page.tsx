@@ -10,6 +10,8 @@ import {
   RotateCcw,
   Navigation,
   MapPin,
+  LogIn,
+  X,
 } from "lucide-react";
 import type { DecisionOption } from "@/lib/types";
 import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
@@ -102,6 +104,8 @@ export default function Home() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [mode, setMode] = useState<"single" | "multi">("single");
   const [location, setLocation] = useState<string | null>(null);
+  const [showJoin, setShowJoin] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
   const placeholder = useTypewriter([
     "告诉 AI 你的想法，或输入选项...",
     "比如：三个人，人均80，吃辣的...",
@@ -398,12 +402,48 @@ export default function Home() {
           <span className="text-sm font-bold tracking-[0.15em] text-foreground/50">
             DECIDENOW
           </span>
-          <button
-            onClick={() => window.location.href = "/history"}
-            className="text-xs font-medium text-foreground/35 hover:text-primary transition-colors"
-          >
-            我的档案
-          </button>
+          <div className="flex items-center gap-3">
+            {!showJoin ? (
+              <button
+                onClick={() => setShowJoin(true)}
+                className="text-xs font-medium text-foreground/35 hover:text-primary transition-colors flex items-center gap-1"
+              >
+                <LogIn className="h-3 w-3" />
+                加入投票
+              </button>
+            ) : (
+              <div className="flex items-center gap-1.5 animate-float-up">
+                <input
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                  placeholder="输入 6 位分享码"
+                  maxLength={6}
+                  className="w-32 rounded-xl border border-foreground/10 bg-white/60 px-3 py-1.5 text-xs font-mono tracking-widest placeholder:text-foreground/20 focus:outline-none focus:border-primary/40"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && joinCode.length >= 4) {
+                      window.location.href = `/room/${joinCode}`;
+                    }
+                  }}
+                />
+                <button
+                  onClick={() => { if (joinCode.length >= 4) window.location.href = `/room/${joinCode}`; }}
+                  disabled={joinCode.length < 4}
+                  className="rounded-lg bg-primary px-2.5 py-1.5 text-[10px] font-bold text-white disabled:opacity-30 transition-all hover:brightness-110"
+                >
+                  进入
+                </button>
+                <button onClick={() => { setShowJoin(false); setJoinCode(""); }} className="text-foreground/20 hover:text-foreground/50">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+            <button
+              onClick={() => window.location.href = "/history"}
+              className="text-xs font-medium text-foreground/35 hover:text-primary transition-colors"
+            >
+              我的档案
+            </button>
+          </div>
         </div>
 
         {/* 主标题 */}
