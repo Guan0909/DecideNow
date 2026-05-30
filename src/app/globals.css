@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 36 100% 98%;
+    --foreground: 240 4% 16%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 4% 16%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 4% 16%;
+    --primary: 18 100% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 50% 57%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 23% 95%;
+    --muted-foreground: 220 10% 45%;
+    --accent: 36 100% 98%;
+    --accent-foreground: 240 4% 16%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 18 100% 55%;
+    --radius: 0.75rem;
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* 移动端优化 */
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
