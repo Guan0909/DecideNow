@@ -186,7 +186,7 @@ export default function Home() {
   if (view === "loading") {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-10 px-8"
-        style={{ background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)" }}>
+        style={{ background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)" }}>
         {/* 呼吸光环 */}
         <div className="animate-breathe relative">
           <div className="absolute inset-0 rounded-full bg-primary/10 blur-2xl" style={{ width: 120, height: 120, left: -20, top: -20 }} />
@@ -230,7 +230,7 @@ export default function Home() {
   if (view === "cards" && options.length > 0) {
     return (
       <div className="animate-page-in flex min-h-screen flex-col px-5 py-8 safe-top"
-        style={{ background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)" }}>
+        style={{ background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)" }}>
         {/* 顶部 */}
         <div className="mb-8 flex items-center justify-between">
           <button
@@ -286,7 +286,8 @@ export default function Home() {
         </div>
 
         {/* 阶段 3: 印章盖下 */}
-        <p className="animate-stamp relative z-10 text-lg font-black uppercase tracking-[0.4em] text-primary/90"
+        <p className="animate-stamp relative z-10 text-lg font-black uppercase tracking-[0.4em]"
+           style={{ color: "#B8935A" }}
            style={{ transform: "rotate(-5deg)" }}>
           决定时刻
         </p>
@@ -364,7 +365,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col safe-top safe-bottom"
       style={{
-        background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)",
+        background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)",
       }}
     >
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-6 pt-16">

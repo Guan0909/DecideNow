@@ -104,7 +104,7 @@ export default function CreateRoom() {
   if (result) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-5 text-center"
-        style={{ background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)" }}>
+        style={{ background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)" }}>
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
           <Share2 className="h-10 w-10 text-primary" />
         </div>
@@ -126,7 +126,7 @@ export default function CreateRoom() {
 
   return (
     <div className="mx-auto max-w-lg px-6 py-8 safe-top safe-bottom"
-      style={{ background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)", minHeight: "100vh" }}>
+      style={{ background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)", minHeight: "100vh" }}>
       <div className="mb-8 flex items-center gap-3">
         <button onClick={() => router.push("/")} className="text-foreground/40 hover:text-primary transition-colors"><ArrowLeft className="h-5 w-5" /></button>
         <h1 className="text-xl font-extrabold text-foreground">发起投票</h1>

@@ -9,33 +9,46 @@
 
 @layer base {
   :root {
-    --background: 40 15% 97%;           /* #F9F7F2 暖调奶白 */
-    --foreground: 0 0% 7%;              /* #121212 更纯黑 */
-    --muted: 40 8% 92%;                 /* #EDEAE3 暖灰 */
-    --muted-foreground: 0 0% 38%;       /* #616161 影灰 */
+    /* ── 背景系：暖石灰阶 ── */
+    --background: 36 12% 96%;           /* #F8F5F0 沙色底 */
+    --foreground: 30 8% 6%;             /* #100E0C 曜石 */
+    --muted: 36 8% 91%;                 /* #ECE7DF 石灰 */
+    --muted-foreground: 30 4% 40%;      /* #6B6560 中性灰 */
 
-    --primary: 155 18% 40%;             /* #557A68 深抹茶 */
+    /* ── 主色系：活绿 ── */
+    --primary: 158 22% 38%;             /* #4D7A65 苔绿（更有存在感） */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 12% 46%;           /* #687D90 雾霾蓝深 */
+    --primary-light: 158 20% 92%;       /* 浅绿底 */
+
+    /* ── 辅色系：河石灰蓝 ── */
+    --secondary: 210 10% 44%;           /* #687582 石板蓝 */
     --secondary-foreground: 0 0% 100%;
+    --secondary-light: 210 12% 93%;     /* 浅蓝底 */
 
-    --card: 0 0% 100% / 0.65;
-    --card-foreground: 0 0% 10%;
-    --popover: 0 0% 100% / 0.88;
-    --popover-foreground: 0 0% 10%;
+    /* ── 强调暖金 ── */
+    --accent: 33 35% 54%;               /* #B8935A 古铜金（仅用于高光/胜出） */
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 35 40% 92%;         /* 暖金底 */
 
-    --border: 0 0% 0% / 0.05;
-    --input: 0 0% 0% / 0.03;
-    --ring: 155 18% 40% / 0.35;
+    /* ── 表面 ── */
+    --card: 0 0% 100% / 0.6;
+    --card-foreground: 30 8% 8%;
+    --popover: 0 0% 100% / 0.9;
+    --popover-foreground: 30 8% 8%;
 
-    --destructive: 0 48% 48%;
+    /* ── 边框 ── */
+    --border: 30 5% 0% / 0.06;
+    --input: 30 5% 0% / 0.035;
+    --ring: 158 22% 38% / 0.3;
+
+    /* ── 功能色 ── */
+    --destructive: 3 48% 48%;           /* 暖红（不刺眼） */
     --destructive-foreground: 0 0% 100%;
-    --accent: 210 12% 46% / 0.08;
-    --accent-foreground: 210 12% 30%;
 
+    /* ── 尺寸 ── */
     --radius: 1.125rem;
     --shadow-soft: 0 2px 20px rgba(0,0,0,0.035), 0 8px 40px rgba(0,0,0,0.02);
-    --shadow-card: 0 1px 8px rgba(0,0,0,0.025), 0 4px 20px rgba(0,0,0,0.015);
+    --shadow-card: 0 1px 6px rgba(0,0,0,0.02), 0 3px 16px rgba(0,0,0,0.012);
   }
 
   /* 暗色模式：暮霭之夜 */
@@ -43,26 +56,29 @@
   [data-theme="dark"],
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --background: 30 4% 8%;           /* #151412 暗夜底 */
-      --foreground: 40 10% 92%;         /* #EDEBE6 月光白 */
-      --muted: 30 3% 14%;               /* #242220 */
-      --muted-foreground: 40 5% 55%;    /* #91908A */
-      --primary: 140 12% 55%;           /* #7DA78D 暗色下稍亮 */
-      --primary-foreground: 0 0% 8%;
-      --secondary: 208 8% 58%;
-      --secondary-foreground: 0 0% 8%;
-      --card: 30 4% 10% / 0.8;
-      --card-foreground: 40 10% 92%;
-      --popover: 30 4% 12% / 0.9;
-      --popover-foreground: 40 10% 92%;
-      --border: 40 5% 20% / 0.5;
-      --input: 40 5% 15% / 0.6;
-      --ring: 140 12% 55% / 0.3;
-      --destructive: 0 45% 55%;
-      --accent: 208 8% 50% / 0.15;
-      --accent-foreground: 208 8% 80%;
-      --shadow-soft: 0 4px 24px rgba(0,0,0,0.3);
-      --shadow-card: 0 2px 12px rgba(0,0,0,0.2);
+      --background: 32 6% 7%;            /* #13110E 暗石底 */
+      --foreground: 36 8% 91%;           /* #EBE7E1 暖月白 */
+      --muted: 32 4% 13%;                /* #22201C */
+      --muted-foreground: 34 4% 52%;     /* #8A8580 */
+      --primary: 156 18% 52%;            /* #6AAD8A 暗色苔绿（更亮） */
+      --primary-foreground: 32 6% 7%;
+      --primary-light: 156 15% 14%;
+      --secondary: 210 8% 58%;           /* #8596A5 */
+      --secondary-foreground: 32 6% 7%;
+      --secondary-light: 210 8% 14%;
+      --accent: 35 30% 56%;              /* #C4A265 暗色暖金 */
+      --accent-foreground: 32 6% 7%;
+      --accent-light: 35 30% 12%;
+      --card: 32 4% 9% / 0.85;
+      --card-foreground: 36 8% 91%;
+      --popover: 32 4% 11% / 0.92;
+      --popover-foreground: 36 8% 91%;
+      --border: 34 5% 18% / 0.5;
+      --input: 34 5% 14% / 0.6;
+      --ring: 156 18% 52% / 0.25;
+      --destructive: 3 38% 55%;
+      --shadow-soft: 0 4px 30px rgba(0,0,0,0.4);
+      --shadow-card: 0 2px 16px rgba(0,0,0,0.25);
     }
   }
 
