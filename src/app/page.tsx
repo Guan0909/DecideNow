@@ -397,7 +397,7 @@ export default function Home() {
         background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)",
       }}
     >
-      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-6 pt-16">
+      <div className={`mx-auto flex w-full max-w-lg flex-1 flex-col px-6 pt-16 ${input.trim().length >= 3 ? "pb-36" : ""}`}>
         {/* 顶部导航 */}
         <div className="mb-12 flex items-center justify-between">
           <span className="text-sm font-bold tracking-[0.15em] text-foreground/50">
@@ -452,8 +452,8 @@ export default function Home() {
           今天在纠结<br />什么？
         </h1>
 
-        {/* 位置标签 */}
-        <div className="mb-4 flex items-center gap-2 text-xs">
+        {/* 输入区域 */}
+        <div className={input.trim().length >= 3 ? "pb-28" : ""}>
           <MapPin className="h-3 w-3 text-muted-foreground/40" />
           {location ? (
             <span className="text-muted-foreground/60">
