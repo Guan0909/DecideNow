@@ -5,10 +5,10 @@ function getSupabase() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
 }
 
-export async function GET(_request: Request, { params }: { params: { code: string } }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ code: string }> }) {
   try {
     const supabase = getSupabase();
-    const code = params.code.toUpperCase();
+    const { code: raw } = await params; const code = raw.toUpperCase();
     const { data: room, error: rErr } = await supabase.from("Room").select("*, decision:Decision(*, options:Option(*))").eq("shareCode", code).single();
     if (rErr || !room) return NextResponse.json({ error: "房间不存在" }, { status: 404 });
 
