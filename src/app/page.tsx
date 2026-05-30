@@ -76,6 +76,14 @@ const CAPSULES = [
   { label: "团队秋游去哪", icon: "🏕️" },
   { label: "今晚看什么电影", icon: "🎬" },
   { label: "约会吃什么", icon: "💕" },
+  { label: "健身私教推荐", icon: "💪" },
+  { label: "周末brunch", icon: "🥐" },
+  { label: "深夜食堂", icon: "🍜" },
+  { label: "露营装备清单", icon: "⛺" },
+  { label: "自习咖啡馆", icon: "☕" },
+  { label: "生日派对策划", icon: "🎂" },
+  { label: "遛娃好去处", icon: "👶" },
+  { label: "一人食推荐", icon: "🍱" },
 ];
 
 /* ============================================
@@ -177,21 +185,39 @@ export default function Home() {
      ======================================== */
   if (view === "loading") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-8 px-8"
+      <div className="flex min-h-screen flex-col items-center justify-center gap-10 px-8"
         style={{ background: "linear-gradient(180deg, #F5F2ED 0%, #EDEAE3 40%, #F9F7F2 100%)" }}>
-        <div className="animate-breathe text-center">
-          <Sparkles className="mx-auto mb-6 h-12 w-12 text-primary" />
-          <p className="text-xl font-bold text-foreground">正在为你思考...</p>
+        {/* 呼吸光环 */}
+        <div className="animate-breathe relative">
+          <div className="absolute inset-0 rounded-full bg-primary/10 blur-2xl" style={{ width: 120, height: 120, left: -20, top: -20 }} />
+          <Sparkles className="relative z-10 mx-auto h-14 w-14 text-primary" />
         </div>
-        <div className="flex gap-2">
-          {["分析偏好", "匹配选项", "生成建议"].map((step, i) => (
-            <span
-              key={step}
-              className="animate-float-up rounded-full bg-muted px-4 py-2 text-xs text-muted-foreground"
-              style={{ animationDelay: `${i * 0.3}s` }}
+
+        <p className="text-xl font-bold text-foreground">正在为你思考...</p>
+
+        {/* 步骤条 */}
+        <div className="flex w-full max-w-xs flex-col gap-3">
+          {[
+            { icon: "🔍", label: "解析你的需求", detail: "理解约束条件" },
+            { icon: "🤖", label: "AI 匹配检索", detail: "筛选最佳选项" },
+            { icon: "✨", label: "生成推荐结果", detail: "撰写个性化评语" },
+          ].map((step, i) => (
+            <div
+              key={step.label}
+              className="animate-float-up flex items-center gap-4 rounded-2xl bg-white/60 backdrop-blur-sm px-5 py-3.5 border border-foreground/5 shadow-sm"
+              style={{ animationDelay: `${i * 0.25}s` }}
             >
-              {step}
-            </span>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground/[0.04] text-xl">
+                {step.icon}
+              </span>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-foreground">{step.label}</p>
+                <p className="text-xs text-muted-foreground">{step.detail}</p>
+              </div>
+              {i < 2 && (
+                <span className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-primary/60" />
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -381,15 +407,15 @@ export default function Home() {
 
         {/* 快捷胶囊 */}
         {!input && (
-          <div className="mb-8 flex flex-wrap gap-2 animate-float-up">
+          <div className="mb-8 grid animate-float-up grid-cols-2 gap-2">
             {CAPSULES.map((c) => (
               <button
                 key={c.label}
                 onClick={() => handleCapsule(c.label)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-foreground/8 bg-white/70 px-4 py-2.5 text-sm font-medium text-foreground/65 backdrop-blur-sm transition-all hover:border-primary/40 hover:text-primary hover:bg-white hover:shadow-md active:scale-95"
+                className="flex items-center gap-2 rounded-2xl border border-foreground/6 bg-white/60 px-4 py-3 text-sm font-medium text-foreground/65 backdrop-blur-sm transition-all hover:border-primary/30 hover:text-primary hover:bg-white hover:shadow-md active:scale-[0.97]"
               >
-                <span className="text-base">{c.icon}</span>
-                <span>{c.label}</span>
+                <span className="text-lg">{c.icon}</span>
+                <span className="truncate">{c.label}</span>
               </button>
             ))}
           </div>
