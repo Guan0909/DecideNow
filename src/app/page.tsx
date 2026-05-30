@@ -24,17 +24,11 @@ export default function Home() {
     }
   };
 
-  const handleSubmit = async (input: string, parseResult: ParseResult | null) => {
-    sessionStorage.setItem("decidenow_input", input);
-    if (parseResult) {
-      sessionStorage.setItem("decidenow_constraints", JSON.stringify(parseResult));
-    }
-    sessionStorage.setItem("decidenow_mode", mode);
-
+  const handleSubmit = async (input: string, _parseResult: ParseResult | null) => {
     if (mode === "single") {
-      window.location.href = "/decide/new";
+      window.location.href = "/decide/new?q=" + encodeURIComponent(input);
     } else {
-      window.location.href = "/room/create";
+      window.location.href = "/room/create?q=" + encodeURIComponent(input);
     }
   };
 

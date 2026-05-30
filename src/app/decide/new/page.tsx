@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { OptionCard } from "@/components/OptionCard";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2, AlertCircle, ArrowLeft } from "lucide-react";
-import type { DecisionOption, ParseResult } from "@/lib/types";
+import type { DecisionOption } from "@/lib/types";
 
 export default function NewDecision() {
   const router = useRouter();
@@ -28,19 +28,16 @@ export default function NewDecision() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
-    const input = sessionStorage.getItem("decidenow_input");
-    const constraintsStr = sessionStorage.getItem("decidenow_constraints");
+    // 从 URL 读取输入
+    const params = new URLSearchParams(window.location.search);
+    const input = params.get("q");
 
     if (!input) {
       router.replace("/");
       return;
     }
 
-    const constraints: ParseResult | null = constraintsStr
-      ? JSON.parse(constraintsStr)
-      : null;
-
-    generateAndSave(input, constraints?.constraints ?? null);
+    generateAndSave(input, null);
   }, [router]);
 
   async function generateAndSave(

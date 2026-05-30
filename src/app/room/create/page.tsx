@@ -22,7 +22,8 @@ export default function CreateRoom() {
   } | null>(null);
 
   useEffect(() => {
-    const savedInput = sessionStorage.getItem("decidenow_input");
+    const params = new URLSearchParams(window.location.search);
+    const savedInput = params.get("q");
     if (savedInput) {
       setTitle(savedInput);
     }
