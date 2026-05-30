@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Plus, X, Sparkles, Loader2, Share2, Wand2 } from "lucide-react";
 
-const SYSTEM_PROMPT = `你是 DecideNow 的投票助手。根据用户输入的主题，生成 2-4 个投票选项。
-每个选项不超过15个字，简洁有力。
-返回纯 JSON 数组，如：["密室逃脱", "烧烤露营", "KTV唱歌"]
-不要包含其他内容。`;
+const SYSTEM_PROMPT = `你是 DecideNow 的投票助手。根据用户输入的主题和地点，生成 2-4 个投票选项。
+每个选项必须包含一个具体的推荐地点（真实存在的店名或场所）。
+返回 JSON 数组，格式如下：
+[{"name":"密室逃脱","location":"X先生密室（徐汇店）"},{"name":"烧烤露营","location":"顾村公园烧烤区"},{"name":"KTV","location":"好乐迪（五角场店）"}]
+name 不超过10字，location 包含店名+区域，不超过20字。`;
 
 export default function CreateRoom() {
   const router = useRouter();
@@ -64,8 +65,14 @@ export default function CreateRoom() {
       const text = data.choices?.[0]?.message?.content || "";
       const match = text.match(/\[[\s\S]*\]/);
       if (match) {
-        const arr: string[] = JSON.parse(match[0]);
-        if (arr.length >= 2) setOptions(arr);
+        const arr = JSON.parse(match[0]);
+        if (Array.isArray(arr) && arr.length >= 2) {
+          // 支持新格式 [{name, location}] 和旧格式 ["string"]
+          const names = arr.map((item: string | { name: string; location: string }) =>
+            typeof item === "string" ? item : `${item.name} · ${item.location}`
+          );
+          setOptions(names);
+        }
       }
     } catch {
       // AI 失败不阻塞
