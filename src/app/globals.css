@@ -2,29 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   DecideNow 2.0 — "无界之境 (Zen Space)"
+   设计系统：晨雾白 · 抹茶薄荷 · 毛玻璃
+   ============================================ */
+
 @layer base {
   :root {
-    --background: 36 100% 98%;
-    --foreground: 240 4% 16%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 4% 16%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 4% 16%;
-    --primary: 18 100% 55%;
+    /* 背景 */
+    --background: 60 5% 96%;        /* #F7F7F5 晨雾白 */
+    --foreground: 0 0% 10%;         /* #1A1A1A 曜石黑 */
+    --muted: 60 3% 94%;             /* #F0F0EE 暮霭灰 */
+    --muted-foreground: 0 0% 54%;   /* #8A8A8A 影灰 */
+
+    /* 强调色 */
+    --primary: 151 14% 57%;         /* #83A090 抹茶薄荷 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 50% 57%;
+    --secondary: 208 9% 54%;        /* #7A8B99 雾霾蓝 */
     --secondary-foreground: 0 0% 100%;
-    --muted: 210 23% 95%;
-    --muted-foreground: 220 10% 45%;
-    --accent: 36 100% 98%;
-    --accent-foreground: 240 4% 16%;
-    --destructive: 0 72% 51%;
+
+    /* 卡片与表面 */
+    --card: 0 0% 100% / 0.7;        /* 毛玻璃卡片 */
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100% / 0.85;
+    --popover-foreground: 0 0% 10%;
+
+    /* 边框与输入 */
+    --border: 0 0% 0% / 0.06;
+    --input: 0 0% 0% / 0.04;
+    --ring: 151 14% 57% / 0.4;
+
+    /* 功能色 */
+    --destructive: 0 50% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 18 100% 55%;
-    --radius: 0.75rem;
-    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+    --accent: 208 9% 54% / 0.1;
+    --accent-foreground: 208 9% 30%;
+
+    /* 圆角 */
+    --radius: 1rem;
+
+    /* 阴影 */
+    --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.04);
+    --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.03);
   }
 }
 
@@ -33,21 +52,99 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter", "PingFang SC", "Hiragino Sans GB", system-ui, -apple-system, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* 移动端优化 */
-@layer utilities {
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
+/* ============================================
+   毛玻璃工具类
+   ============================================ */
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
   }
-  .safe-top {
-    padding-top: env(safe-area-inset-top);
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.06);
   }
-  .touch-target {
-    min-height: 44px;
-    min-width: 44px;
+
+  /* 无边界输入框 */
+  .input-zen {
+    background: rgba(0, 0, 0, 0.02);
+    border: none;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+    border-radius: 16px;
+    padding: 16px 20px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+  .input-zen:focus {
+    outline: none;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 3px rgba(131, 160, 144, 0.15);
+  }
+
+  /* 弥散阴影卡片 */
+  .card-soft {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.04);
   }
 }
+
+/* ============================================
+   动画
+   ============================================ */
+@layer utilities {
+  /* 呼吸光晕 */
+  .animate-breathe {
+    animation: breathe 2s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); }
+  }
+
+  /* 浮现 */
+  .animate-float-up {
+    animation: floatUp 0.4s ease-out;
+  }
+  @keyframes floatUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 水波纹 */
+  .animate-ripple {
+    animation: ripple 0.5s ease-out;
+  }
+  @keyframes ripple {
+    from { transform: scale(0.95); opacity: 0.8; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* 打字机光标 */
+  .cursor-typewriter {
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+}
+
+/* 安全区域 */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-top { padding-top: env(safe-area-inset-top); }

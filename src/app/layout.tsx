@@ -11,21 +11,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "DecideNow - 让每一个纠结都有答案",
-  description:
-    "用 AI + 社交投票，帮助你在生活琐事和群体决策中快速做出选择。",
+  description: "用 AI + 社交投票，帮助你在生活琐事和群体决策中快速做出选择。",
   manifest: "/manifest.json",
-  icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "DecideNow",
-  },
+  icons: { icon: "/icon.svg", apple: "/icon.svg" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "DecideNow" },
   openGraph: {
-    title: "DecideNow - 让每一个纠结都有答案",
-    description: "用 AI + 社交投票，快速做出选择。3秒提需求，10秒得结果。",
+    title: "DecideNow · 让每一个纠结都有答案",
+    description: "用 AI 降噪 + 社交投票，快速做出选择。",
     type: "website",
     locale: "zh_CN",
   },
@@ -39,12 +31,10 @@ export const viewport = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-CN" className={cn("font-sans", inter.variable)}>
-      <body className="min-h-screen bg-[#FFFAF5] font-sans antialiased">
+      <body className="min-h-screen bg-background font-sans antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>
