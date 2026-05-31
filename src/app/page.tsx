@@ -9,6 +9,43 @@ import type { DecisionOption } from "@/lib/types";
 
 type View = "input" | "loading" | "cards" | "result" | "error";
 
+/* 基于时段和日期的智能标签推荐 */
+function getTimeContext() {
+  const now = new Date();
+  const hour = now.getHours();
+  // Weekend detection available for future use: now.getDay()
+
+  if (hour >= 6 && hour < 10) {
+    return { label: "☀️ 清晨灵感", tags: [
+      { icon: "☕", label: "早起咖啡去哪" }, { icon: "🥐", label: "brunch推荐" }, { icon: "🏃", label: "晨跑路线" },
+      { icon: "📚", label: "周末自习室" }, { icon: "🍳", label: "早餐吃什么" }, { icon: "🧘", label: "瑜伽馆推荐" },
+    ]};
+  }
+  if (hour >= 10 && hour < 14) {
+    return { label: "🕐 午间纠结", tags: [
+      { icon: "🍜", label: "午餐吃什么" }, { icon: "🥗", label: "轻食沙拉" }, { icon: "🍱", label: "一人食推荐" },
+      { icon: "💻", label: "共享办公" }, { icon: "🛒", label: "午休逛街" }, { icon: "☀️", label: "户外散步" },
+    ]};
+  }
+  if (hour >= 14 && hour < 18) {
+    return { label: "🌤 午后时光", tags: [
+      { icon: "🍰", label: "下午茶去哪" }, { icon: "☕", label: "自习咖啡馆" }, { icon: "🎬", label: "今晚电影" },
+      { icon: "💕", label: "约会晚餐" }, { icon: "🍸", label: "下班微醺" }, { icon: "🎂", label: "生日派对" },
+    ]};
+  }
+  if (hour >= 18 && hour < 23) {
+    return { label: "🌙 晚间消遣", tags: [
+      { icon: "🍸", label: "周末微醺" }, { icon: "🍜", label: "深夜食堂" }, { icon: "🎬", label: "今晚看什么" },
+      { icon: "🎤", label: "KTV唱歌" }, { icon: "🍻", label: "精酿酒吧" }, { icon: "🌃", label: "夜景打卡" },
+    ]};
+  }
+  // 深夜 23-6
+  return { label: "🌃 夜猫子推荐", tags: [
+    { icon: "🍜", label: "深夜食堂" }, { icon: "🍸", label: "深夜酒吧" }, { icon: "🎮", label: "开黑去哪" },
+    { icon: "🎬", label: "午夜电影" }, { icon: "🍲", label: "24h火锅" }, { icon: "🎵", label: "livehouse" },
+  ]};
+}
+
 export default function Home() {
   const [input, setInput] = useState("");
   const [view, setView] = useState<View>("input");
@@ -179,7 +216,7 @@ export default function Home() {
         <textarea value={input} onChange={(e) => setInput(e.target.value)}
           placeholder="比如：三个人，人均100，徐家汇吃辣..."
           rows={3}
-          className="input-premium mb-8 resize-none leading-relaxed"
+          className="input-premium mb-4 resize-none leading-relaxed"
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
         />
 
@@ -196,23 +233,21 @@ export default function Home() {
           </div>
         )}
 
-        {/* Capsules */}
+        {/* Capsules — 基于时段智能推荐 */}
         {!input && (
-          <div className="grid grid-cols-3 gap-2 animate-in">
-            {[
-              { icon: "🍸", label: "周末微醺" },
-              { icon: "🏕️", label: "秋游去哪" },
-              { icon: "🎬", label: "今晚电影" },
-              { icon: "💕", label: "约会晚餐" },
-              { icon: "☕", label: "自习咖啡" },
-              { icon: "🍜", label: "深夜食堂" },
-            ].map((c) => (
-              <button key={c.label} onClick={() => setInput(c.label)}
-                className="card-premium flex items-center gap-2 px-4 py-3 text-sm font-medium text-foreground/70 hover:text-primary transition-colors">
-                <span className="text-base">{c.icon}</span>
-                <span>{c.label}</span>
-              </button>
-            ))}
+          <div className="animate-in">
+            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-foreground/20">
+              {getTimeContext().label}
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {getTimeContext().tags.map((c) => (
+                <button key={c.label} onClick={() => setInput(c.label)}
+                  className="card-premium flex items-center gap-2 px-4 py-3 text-sm font-medium text-foreground/70 hover:text-primary transition-colors">
+                  <span className="text-base">{c.icon}</span>
+                  <span>{c.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
