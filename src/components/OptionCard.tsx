@@ -37,7 +37,10 @@ export function OptionCard({ option, index, total, onSelect, onPrev, onNext }: O
         onTouchMove={(e) => { if (touchStart.current) setSwipeX(e.touches[0].clientX - touchStart.current.x); }}
         onTouchEnd={() => {
           setSwiping(false);
-          if (Math.abs(swipeX) > 60) swipeX < 0 && index < total - 1 ? onNext() : swipeX > 0 && index > 0 ? onPrev() : null;
+          if (Math.abs(swipeX) > 60) {
+            if (swipeX < 0 && index < total - 1) onNext();
+            else if (swipeX > 0 && index > 0) onPrev();
+          }
           setSwipeX(0);
         }}
         style={{
