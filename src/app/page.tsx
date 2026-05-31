@@ -16,33 +16,32 @@ function getTimeContext() {
   // Weekend detection available for future use: now.getDay()
 
   if (hour >= 6 && hour < 10) {
-    return { label: "☀️ 清晨灵感", tags: [
-      { icon: "☕", label: "早起咖啡去哪" }, { icon: "🥐", label: "brunch推荐" }, { icon: "🏃", label: "晨跑路线" },
-      { icon: "📚", label: "周末自习室" }, { icon: "🍳", label: "早餐吃什么" }, { icon: "🧘", label: "瑜伽馆推荐" },
+    return { label: "清晨灵感", tags: [
+      { icon: "☕", label: "晨间咖啡" }, { icon: "🥐", label: "早午套餐" }, { icon: "🏃", label: "晨跑路线" },
+      { icon: "📚", label: "周末自习" }, { icon: "🍳", label: "早餐推荐" }, { icon: "🧘", label: "瑜伽体验" },
     ]};
   }
   if (hour >= 10 && hour < 14) {
-    return { label: "🕐 午间纠结", tags: [
-      { icon: "🍜", label: "午餐吃什么" }, { icon: "🥗", label: "轻食沙拉" }, { icon: "🍱", label: "一人食推荐" },
-      { icon: "💻", label: "共享办公" }, { icon: "🛒", label: "午休逛街" }, { icon: "☀️", label: "户外散步" },
+    return { label: "午间推荐", tags: [
+      { icon: "🍜", label: "午餐去哪" }, { icon: "🥗", label: "轻食沙拉" }, { icon: "🍱", label: "一人食光" },
+      { icon: "💻", label: "共享办公" }, { icon: "🛒", label: "午休逛逛" }, { icon: "☀️", label: "户外散步" },
     ]};
   }
   if (hour >= 14 && hour < 18) {
-    return { label: "🌤 午后时光", tags: [
-      { icon: "🍰", label: "下午茶去哪" }, { icon: "☕", label: "自习咖啡馆" }, { icon: "🎬", label: "今晚电影" },
+    return { label: "午后时光", tags: [
+      { icon: "🍰", label: "下午茶约" }, { icon: "☕", label: "自习咖啡" }, { icon: "🎬", label: "今晚电影" },
       { icon: "💕", label: "约会晚餐" }, { icon: "🍸", label: "下班微醺" }, { icon: "🎂", label: "生日派对" },
     ]};
   }
   if (hour >= 18 && hour < 23) {
-    return { label: "🌙 晚间消遣", tags: [
-      { icon: "🍸", label: "周末微醺" }, { icon: "🍜", label: "深夜食堂" }, { icon: "🎬", label: "今晚看什么" },
+    return { label: "晚间消遣", tags: [
+      { icon: "🍸", label: "今晚微醺" }, { icon: "🍜", label: "深夜食堂" }, { icon: "🎬", label: "电影推荐" },
       { icon: "🎤", label: "KTV唱歌" }, { icon: "🍻", label: "精酿酒吧" }, { icon: "🌃", label: "夜景打卡" },
     ]};
   }
-  // 深夜 23-6
-  return { label: "🌃 夜猫子推荐", tags: [
-    { icon: "🍜", label: "深夜食堂" }, { icon: "🍸", label: "深夜酒吧" }, { icon: "🎮", label: "开黑去哪" },
-    { icon: "🎬", label: "午夜电影" }, { icon: "🍲", label: "24h火锅" }, { icon: "🎵", label: "livehouse" },
+  return { label: "夜猫推荐", tags: [
+    { icon: "🍜", label: "深夜食堂" }, { icon: "🍸", label: "深夜酒吧" }, { icon: "🎮", label: "开黑地点" },
+    { icon: "🎬", label: "午夜电影" }, { icon: "🍲", label: "通宵火锅" }, { icon: "🎵", label: "现场音乐" },
   ]};
 }
 
