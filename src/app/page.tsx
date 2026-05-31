@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Users, MapPin, ArrowRight, LogIn } from "lucide-react";
+import { Sparkles, Users, MapPin, LogIn } from "lucide-react";
 import { OptionCard } from "@/components/OptionCard";
 import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
 import type { DecisionOption } from "@/lib/types";
