@@ -103,10 +103,16 @@
   .btn-premium:active { transform: scale(0.97); }
 
   .input-premium {
-    @apply w-full rounded-xl border border-border bg-white px-4 py-3.5 text-[15px];
+    @apply w-full rounded-xl border border-border bg-white px-4 py-3.5 text-[15px] text-foreground;
     @apply transition-all duration-200;
-    @apply placeholder:text-muted-foreground/40;
+    @apply placeholder:text-foreground/25;
     @apply focus:outline-none focus:border-primary/50;
+  }
+  /* Dark mode: 白色文字 + 暗底 */
+  @media (prefers-color-scheme: dark) {
+    .input-premium {
+      @apply bg-card border-border text-foreground;
+    }
   }
 }
 
