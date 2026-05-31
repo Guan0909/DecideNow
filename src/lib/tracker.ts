@@ -55,7 +55,7 @@ export const Metrics = {
 
   // 6. 房间创建
   roomCreated: (optionCount: number) =>
-    track("room_created", { optionCount }),
+    track("room_created", { mode: "multi", optionCount }),
 
   // 7. 投票参与
   voteCast: () => track("vote_cast"),
