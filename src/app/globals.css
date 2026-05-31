@@ -35,23 +35,23 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --background: 24 8% 6%;            /* #0F0D0B */
-      --foreground: 30 15% 93%;          /* #F0EBE4 */
-      --card: 24 8% 10%;
-      --card-foreground: 30 15% 93%;
-      --popover: 24 8% 12%;
-      --popover-foreground: 30 15% 93%;
-      --primary: 14 45% 56%;             /* #CF7354 */
+      --foreground: 35 15% 92%;          /* #F2EEE8 暖白字 */
+      --card: 24 8% 11%;                 /* #1D1A16 */
+      --card-foreground: 35 15% 92%;
+      --popover: 24 8% 13%;
+      --popover-foreground: 35 15% 92%;
+      --primary: 14 45% 58%;             /* #D4785A 暗色更亮 */
       --primary-foreground: 24 8% 6%;
-      --secondary: 38 25% 52%;
+      --secondary: 38 28% 55%;
       --secondary-foreground: 24 8% 6%;
-      --muted: 24 8% 16%;
-      --muted-foreground: 30 8% 58%;
-      --accent: 14 45% 56% / 0.12;
-      --accent-foreground: 14 40% 70%;
-      --destructive: 0 50% 50%;
-      --border: 24 8% 20%;
-      --input: 24 8% 18%;
-      --ring: 14 45% 56% / 0.3;
+      --muted: 24 8% 18%;                /* #2C2824 */
+      --muted-foreground: 34 10% 67%;    /* #B5ADA4 更亮灰 */
+      --accent: 14 45% 56% / 0.15;
+      --accent-foreground: 14 45% 75%;
+      --destructive: 0 55% 55%;
+      --border: 24 10% 24%;              /* #3E3833 可见边框 */
+      --input: 24 8% 16%;
+      --ring: 14 45% 58% / 0.35;
     }
   }
 
@@ -108,13 +108,50 @@
     @apply placeholder:text-foreground/25;
     @apply focus:outline-none focus:border-primary/50;
   }
-  /* Dark mode */
+  /* Dark mode overrides */
   @media (prefers-color-scheme: dark) {
     .input-premium {
-      @apply bg-card border-border text-foreground;
+      @apply bg-card border-border text-foreground placeholder:text-foreground/35;
     }
-    .btn-outline-dark {
-      @apply border-border bg-card text-foreground hover:bg-muted;
+    .card-premium {
+      @apply bg-card border-border;
+    }
+    /* 所有 muted 底色元素提亮 */
+    .bg-muted, .bg-muted\/50, .bg-muted\/30 {
+      @apply bg-muted;
+    }
+    /* 标签胶囊 */
+    .bg-foreground\/\[0\.03\], .bg-foreground\/\[0\.04\], .bg-foreground\/\[0\.05\] {
+      background: hsl(var(--muted));
+    }
+    /* 白色底元素 → 卡片色 */
+    .bg-white, .bg-white\/50, .bg-white\/60, .bg-white\/70, .bg-white\/80, .bg-white\/90 {
+      @apply bg-card;
+    }
+    /* 琥珀色提示条暗色适配 */
+    .bg-amber-50 {
+      background: rgba(180, 120, 20, 0.12);
+    }
+    .border-amber-200\/50 {
+      border-color: rgba(180, 120, 20, 0.25);
+    }
+    .text-amber-800 {
+      color: #E8C56D;
+    }
+    .text-amber-600\/70 {
+      color: rgba(210, 165, 70, 0.8);
+    }
+    .bg-amber-100 {
+      background: rgba(180, 120, 20, 0.2);
+    }
+    .text-amber-700 {
+      color: #D4A840;
+    }
+    .border-amber-200 {
+      border-color: rgba(180, 120, 20, 0.25);
+    }
+    .placeholder\\:text-amber-400\\/60::placeholder {
+      color: rgba(200, 150, 50, 0.5);
     }
   }
 }
