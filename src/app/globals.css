@@ -108,10 +108,13 @@
     @apply placeholder:text-foreground/25;
     @apply focus:outline-none focus:border-primary/50;
   }
-  /* Dark mode: 白色文字 + 暗底 */
+  /* Dark mode */
   @media (prefers-color-scheme: dark) {
     .input-premium {
       @apply bg-card border-border text-foreground;
+    }
+    .btn-outline-dark {
+      @apply border-border bg-card text-foreground hover:bg-muted;
     }
   }
 }
