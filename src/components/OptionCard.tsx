@@ -45,9 +45,6 @@ export function OptionCard({ option, index, total, onSelect, onPrev, onNext }: O
     touchStart.current = null;
   }, [swipeX, index, total, onNext, onPrev]);
 
-  const progress = total > 1 ? index / (total - 1) : 0;
-  const dragProgress = swiping ? Math.max(-1, Math.min(1, -swipeX / 200)) : 0;
-
   return (
     <div className="relative mx-auto w-full max-w-sm select-none">
       {/* 卡片堆叠效果（背景虚影） */}
