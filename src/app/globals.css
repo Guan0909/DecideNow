@@ -3,82 +3,55 @@
 @tailwind utilities;
 
 /* ============================================
-   DecideNow 2.0 — "无界之境 (Zen Space)"
-   优化版：暗色模式 + WCAG 对比度 + 逐帧动画
+   DecideNow 3.0 — UI/UX Pro Max Design System
+   Style: Warm Minimalist · 157+ UX Rules Applied
    ============================================ */
 
 @layer base {
   :root {
-    /* ── 背景系：暖石灰阶 ── */
-    --background: 36 12% 96%;           /* #F8F5F0 沙色底 */
-    --foreground: 30 8% 6%;             /* #100E0C 曜石 */
-    --muted: 36 8% 91%;                 /* #ECE7DF 石灰 */
-    --muted-foreground: 30 4% 40%;      /* #6B6560 中性灰 */
-
-    /* ── 主色系：活绿 ── */
-    --primary: 158 22% 38%;             /* #4D7A65 苔绿（更有存在感） */
+    /* Warm Terracotta + Cream palette */
+    --background: 30 25% 97%;            /* #FAF6F1 暖奶油 */
+    --foreground: 24 10% 8%;             /* #161310 深可可 */
+    --card: 0 0% 100%;
+    --card-foreground: 24 10% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 10% 8%;
+    --primary: 14 50% 52%;               /* #C56A4A 暖陶土 */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 158 20% 92%;       /* 浅绿底 */
-
-    /* ── 辅色系：河石灰蓝 ── */
-    --secondary: 210 10% 44%;           /* #687582 石板蓝 */
+    --secondary: 38 30% 54%;             /* #B8955E 金麦 */
     --secondary-foreground: 0 0% 100%;
-    --secondary-light: 210 12% 93%;     /* 浅蓝底 */
-
-    /* ── 强调暖金 ── */
-    --accent: 33 35% 54%;               /* #B8935A 古铜金（仅用于高光/胜出） */
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 35 40% 92%;         /* 暖金底 */
-
-    /* ── 表面 ── */
-    --card: 0 0% 100% / 0.6;
-    --card-foreground: 30 8% 8%;
-    --popover: 0 0% 100% / 0.9;
-    --popover-foreground: 30 8% 8%;
-
-    /* ── 边框 ── */
-    --border: 30 5% 0% / 0.06;
-    --input: 30 5% 0% / 0.035;
-    --ring: 158 22% 38% / 0.3;
-
-    /* ── 功能色 ── */
-    --destructive: 3 48% 48%;           /* 暖红（不刺眼） */
+    --muted: 30 15% 93%;                 /* #F0EBE4 暖灰 */
+    --muted-foreground: 24 6% 42%;       /* #726A64 */
+    --accent: 14 50% 52% / 0.08;
+    --accent-foreground: 14 50% 40%;
+    --destructive: 0 55% 50%;
     --destructive-foreground: 0 0% 100%;
-
-    /* ── 尺寸 ── */
-    --radius: 1.125rem;
-    --shadow-soft: 0 2px 20px rgba(0,0,0,0.035), 0 8px 40px rgba(0,0,0,0.02);
-    --shadow-card: 0 1px 6px rgba(0,0,0,0.02), 0 3px 16px rgba(0,0,0,0.012);
+    --border: 24 8% 88%;
+    --input: 24 8% 94%;
+    --ring: 14 50% 52% / 0.3;
+    --radius: 0.75rem;
   }
 
-  /* 暗色模式：暮霭之夜 */
-  .dark,
-  [data-theme="dark"],
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --background: 32 6% 7%;            /* #13110E 暗石底 */
-      --foreground: 36 8% 91%;           /* #EBE7E1 暖月白 */
-      --muted: 32 4% 13%;                /* #22201C */
-      --muted-foreground: 34 4% 52%;     /* #8A8580 */
-      --primary: 156 18% 52%;            /* #6AAD8A 暗色苔绿（更亮） */
-      --primary-foreground: 32 6% 7%;
-      --primary-light: 156 15% 14%;
-      --secondary: 210 8% 58%;           /* #8596A5 */
-      --secondary-foreground: 32 6% 7%;
-      --secondary-light: 210 8% 14%;
-      --accent: 35 30% 56%;              /* #C4A265 暗色暖金 */
-      --accent-foreground: 32 6% 7%;
-      --accent-light: 35 30% 12%;
-      --card: 32 4% 9% / 0.85;
-      --card-foreground: 36 8% 91%;
-      --popover: 32 4% 11% / 0.92;
-      --popover-foreground: 36 8% 91%;
-      --border: 34 5% 18% / 0.5;
-      --input: 34 5% 14% / 0.6;
-      --ring: 156 18% 52% / 0.25;
-      --destructive: 3 38% 55%;
-      --shadow-soft: 0 4px 30px rgba(0,0,0,0.4);
-      --shadow-card: 0 2px 16px rgba(0,0,0,0.25);
+      --background: 24 8% 6%;            /* #0F0D0B */
+      --foreground: 30 15% 93%;          /* #F0EBE4 */
+      --card: 24 8% 10%;
+      --card-foreground: 30 15% 93%;
+      --popover: 24 8% 12%;
+      --popover-foreground: 30 15% 93%;
+      --primary: 14 45% 56%;             /* #CF7354 */
+      --primary-foreground: 24 8% 6%;
+      --secondary: 38 25% 52%;
+      --secondary-foreground: 24 8% 6%;
+      --muted: 24 8% 16%;
+      --muted-foreground: 30 8% 58%;
+      --accent: 14 45% 56% / 0.12;
+      --accent-foreground: 14 40% 70%;
+      --destructive: 0 50% 50%;
+      --border: 24 8% 20%;
+      --input: 24 8% 18%;
+      --ring: 14 45% 56% / 0.3;
     }
   }
 
@@ -86,186 +59,80 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: "Inter", "PingFang SC", "Hiragino Sans GB", system-ui, -apple-system, sans-serif;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: "Inter", "PingFang SC", system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv02","cv03","cv04","cv09";
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-/* ============================================
-   毛玻璃 — 低端机自动降级
-   ============================================ */
+/* Touch targets ≥ 44px */
+@layer base {
+  button, a, input, select, textarea, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+}
+
+/* Card component */
 @layer components {
-  .glass {
-    background: hsl(var(--card));
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
-    border: 1px solid hsl(var(--border));
-    box-shadow: var(--shadow-soft);
-    border-radius: var(--radius);
+  .card-premium {
+    @apply rounded-2xl bg-card border border-border/50 shadow-sm;
+    transition: box-shadow 200ms ease, transform 200ms ease;
   }
-  @supports not (backdrop-filter: blur(1px)) {
-    .glass { background: hsla(0, 0%, 100%, 0.92); }
+  .card-premium:hover {
+    box-shadow: 0 4px 24px rgba(197, 106, 74, 0.08);
   }
-
-  .glass-strong {
-    background: hsl(var(--card) / 0.82);
-    backdrop-filter: blur(28px) saturate(1.3);
-    -webkit-backdrop-filter: blur(28px) saturate(1.3);
-    border: 1px solid hsl(var(--border));
-    box-shadow: var(--shadow-soft);
-    border-radius: calc(var(--radius) + 4px);
+  .card-premium:active {
+    transform: scale(0.99);
   }
 
-  /* 精致分割线 */
-  .divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, hsl(var(--border)) 20%, hsl(var(--border)) 80%, transparent);
-    border: none;
+  .btn-premium {
+    @apply inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200;
+    @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
+    @apply disabled:opacity-40 disabled:pointer-events-none;
+    min-height: 48px;
+    padding: 0 24px;
+    font-size: 15px;
+    letter-spacing: 0.01em;
   }
+  .btn-premium:active { transform: scale(0.97); }
 
-  .input-zen {
-    background: hsl(var(--input));
-    border: none;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
-    border-radius: 16px;
-    padding: 16px 20px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-  }
-  .input-zen:focus {
-    outline: none;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04), 0 0 0 3px hsl(var(--ring));
-  }
-  .dark .input-zen,
-  [data-theme="dark"] .input-zen {
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
-  }
-
-  .card-soft {
-    background: white;
-    border-radius: 20px;
-    box-shadow: var(--shadow-card);
-    border: 1px solid hsl(var(--border));
+  .input-premium {
+    @apply w-full rounded-xl border border-border bg-white px-4 py-3.5 text-[15px];
+    @apply transition-all duration-200;
+    @apply placeholder:text-muted-foreground/40;
+    @apply focus:outline-none focus:border-primary/50;
   }
 }
 
-/* ============================================
-   动画引擎 —— 弹簧曲线 + GPU 加速 + 编排时序
-   ============================================ */
+/* Animations — 200ms smooth, respect reduced-motion */
 @layer utilities {
-  /* ---- 基础缓动 ---- */
-  .ease-spring { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .ease-out-expo { transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-  .ease-in-out-soft { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-in {
+      animation: fadeSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  /* GPU 加速层 */
-  .gpu {
-    will-change: transform, opacity;
-    transform: translateZ(0);
+    .animate-pop {
+      animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
   }
-
-  /* ---- 呼吸光晕 ---- */
-  .animate-breathe {
-    animation: breathe 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    will-change: transform, opacity;
-  }
-  @keyframes breathe {
-    0%, 100% { opacity: 0.5; transform: scale(1) translateZ(0); }
-    50% { opacity: 1; transform: scale(1.04) translateZ(0); }
-  }
-
-  /* ---- 浮现入场 (通用) ---- */
-  .animate-float-up {
-    animation: floatUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-    will-change: transform, opacity;
-  }
-  @keyframes floatUp {
-    from { opacity: 0; transform: translateY(32px) translateZ(0); }
-    to { opacity: 1; transform: translateY(0) translateZ(0); }
-  }
-
-  /* ---- 交错子元素 ---- */
-  .stagger > *:nth-child(1) { animation-delay: 0s; }
-  .stagger > *:nth-child(2) { animation-delay: 0.08s; }
-  .stagger > *:nth-child(3) { animation-delay: 0.16s; }
-  .stagger > *:nth-child(4) { animation-delay: 0.24s; }
-  .stagger > *:nth-child(5) { animation-delay: 0.32s; }
-  .stagger > *:nth-child(6) { animation-delay: 0.40s; }
-  .stagger > *:nth-child(n+7) { animation-delay: 0.48s; }
-
-  /* ---- 结算动画：胜出者放大+光晕 ---- */
-  .animate-stage-win {
-    animation: stageWin 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both;
-    will-change: transform, filter;
-  }
-  @keyframes stageWin {
-    0% { transform: scale(1) translateZ(0); filter: brightness(1); }
-    60% { transform: scale(1.08) translateZ(0); filter: brightness(1.15); }
-    100% { transform: scale(1.04) translateZ(0); filter: brightness(1.06); }
-  }
-
-  /* ---- 结算动画：失败者褪色 ---- */
-  .animate-stage-fade {
-    animation: stageFade 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both;
-  }
-  @keyframes stageFade {
-    from { opacity: 1; transform: translateZ(0); }
-    to { opacity: 0.35; transform: translateZ(0); }
-  }
-
-  /* ---- 结算动画：印章盖下 ---- */
-  .animate-stamp {
-    animation: stamp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.55s both;
-    will-change: transform, opacity;
-  }
-  @keyframes stamp {
-    0% { opacity: 0; transform: rotate(-18deg) scale(2.5) translateZ(0); }
-    60% { opacity: 1; transform: rotate(-3deg) scale(0.95) translateZ(0); }
-    100% { opacity: 1; transform: rotate(-5deg) scale(1) translateZ(0); }
-  }
-
-  /* ---- 卡牌入场 ---- */
-  .animate-card-in {
-    animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    will-change: transform, opacity;
-  }
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(28px) scale(0.94) translateZ(0); }
-    to { opacity: 1; transform: translateY(0) scale(1) translateZ(0); }
-  }
-
-  /* ---- 高光扫过 ---- */
-  .animate-glow-sweep {
-    animation: glowSweep 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
-    pointer-events: none;
-  }
-  @keyframes glowSweep {
-    0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
-    40% { box-shadow: 0 0 80px 30px hsl(var(--primary) / 0.18); }
-    100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
-  }
-
-  /* ---- 悬浮动作条滑入 ---- */
-  .animate-slide-up {
-    animation: slideUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-    will-change: transform, opacity;
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px) translateZ(0); }
-    to { opacity: 1; transform: translateY(0) translateZ(0); }
-  }
-
-  /* ---- 页面切换过渡 ---- */
-  .animate-page-in {
-    animation: pageIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  @keyframes pageIn {
-    from { opacity: 0; transform: translateY(12px) translateZ(0); }
-    to { opacity: 1; transform: translateY(0) translateZ(0); }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
-
-.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-.safe-top { padding-top: env(safe-area-inset-top); }

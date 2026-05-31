@@ -1,97 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Sparkles,
-  Users,
-  CheckCircle2,
-  Share2,
-  RotateCcw,
-  Navigation,
-  MapPin,
-  LogIn,
-  X,
-} from "lucide-react";
-import type { DecisionOption } from "@/lib/types";
-import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
+import { Sparkles, Users, MapPin, ArrowRight, LogIn } from "lucide-react";
 import { OptionCard } from "@/components/OptionCard";
+import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
+import type { DecisionOption } from "@/lib/types";
 
-interface ResultOption {
-  id: string;
-  name: string;
-  description: string;
-  priceHint: string | null;
-  locationHint: string | null;
-  scoreCard: string | null;
-}
-interface ResultData {
-  title: string;
-  completedAt: string;
-  options: ResultOption[];
-  selectedId: string;
-}
-
-/* ============================================
-   打字机 Hook
-   ============================================ */
-function useTypewriter(texts: string[], speed = 60, pause = 3000) {
-  const [display, setDisplay] = useState("");
-  const [deleting, setDeleting] = useState(false);
-  const textIndex = useRef(0);
-  const charIndex = useRef(0);
-
-  useEffect(() => {
-    const currentText = texts[textIndex.current % texts.length];
-    let timeout: NodeJS.Timeout;
-
-    if (!deleting) {
-      if (charIndex.current < currentText.length) {
-        timeout = setTimeout(() => {
-          setDisplay(currentText.slice(0, charIndex.current + 1));
-          charIndex.current++;
-        }, speed);
-      } else {
-        timeout = setTimeout(() => setDeleting(true), pause);
-      }
-    } else {
-      if (charIndex.current > 0) {
-        timeout = setTimeout(() => {
-          setDisplay(currentText.slice(0, charIndex.current - 1));
-          charIndex.current--;
-        }, speed / 2);
-      } else {
-        setDeleting(false);
-        textIndex.current++;
-      }
-    }
-    return () => clearTimeout(timeout);
-  }, [display, deleting, texts, speed, pause]);
-
-  return display;
-}
-
-/* ============================================
-   快捷胶囊
-   ============================================ */
-const CAPSULES = [
-  { label: "两人周末微醺", icon: "🍸" },
-  { label: "团队秋游去哪", icon: "🏕️" },
-  { label: "今晚看什么电影", icon: "🎬" },
-  { label: "约会吃什么", icon: "💕" },
-  { label: "健身私教推荐", icon: "💪" },
-  { label: "周末brunch", icon: "🥐" },
-  { label: "深夜食堂", icon: "🍜" },
-  { label: "露营装备清单", icon: "⛺" },
-  { label: "自习咖啡馆", icon: "☕" },
-  { label: "生日派对策划", icon: "🎂" },
-  { label: "遛娃好去处", icon: "👶" },
-  { label: "一人食推荐", icon: "🍱" },
-];
-
-/* ============================================
-   视图状态
-   ============================================ */
 type View = "input" | "loading" | "cards" | "result" | "error";
 
 export default function Home() {
@@ -99,72 +14,26 @@ export default function Home() {
   const [view, setView] = useState<View>("input");
   const [options, setOptions] = useState<DecisionOption[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [decisionData, setDecisionData] = useState<ResultData | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [mode, setMode] = useState<"single" | "multi">("single");
-  const [location, setLocation] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [selectedIdx, setSelectedIdx] = useState(0);
   const [showJoin, setShowJoin] = useState(false);
   const [joinCode, setJoinCode] = useState("");
-  const placeholder = useTypewriter([
-    "告诉 AI 你的想法，或输入选项...",
-    "比如：三个人，人均80，吃辣的...",
-    "比如：周末去哪玩？户外自驾...",
-  ]);
 
-  // 获取位置（OpenStreetMap 免费 API，无需 Key）
-  useEffect(() => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=12&accept-language=zh`,
-            { headers: { "User-Agent": "DecideNow/1.0" } }
-          );
-          if (res.ok) {
-            const data = await res.json();
-            const addr = data.address || {};
-            const district = addr.city_district || addr.suburb || addr.county || addr.city || addr.town || "";
-            if (district) setLocation(district);
-          }
-        } catch { /* 定位不影响使用 */ }
-      },
-      () => { /* 用户拒绝定位 */ },
-      { timeout: 8000, enableHighAccuracy: false }
-    );
-  }, []);
-
-  /* ---------- 胶囊点击 ---------- */
-  const handleCapsule = useCallback((text: string) => {
-    setInput(text);
-    // 自动聚焦
-    const ta = document.querySelector("textarea");
-    if (ta) ta.focus();
-  }, []);
-
-  /* ---------- 提交：单人 AI ---------- */
-  const handleSingle = useCallback(async () => {
+  const handleSubmit = useCallback(async () => {
     if (input.trim().length < 3) return;
     setView("loading");
-    setErrorMsg(null);
+    setErrorMsg("");
     try {
-      const apiKey = "sk-c6544b31afef47a2b3d6a9cb0bcb3709";
       const res = await fetch("https://api.deepseek.com/chat/completions", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
         body: JSON.stringify({
           model: "deepseek-v4-flash",
           messages: [
             { role: "system", content: GENERATE_SYSTEM_PROMPT },
-            { role: "user", content: `用户需求：${input.trim()}${location ? `\n用户当前位置：${location}` : ""}\n\n请根据用户位置推荐附近真实地点，生成 3 个决策选项。` },
+            { role: "user", content: `用户需求：${input.trim()}\n\n请生成 3 个决策选项。` },
           ],
-          temperature: 0.7,
-          max_tokens: 800,
+          temperature: 0.7, max_tokens: 800,
         }),
       });
       if (!res.ok) throw new Error("AI 响应异常");
@@ -184,348 +53,166 @@ export default function Home() {
     }
   }, [input]);
 
-  /* ---------- 提交：多人 ---------- */
-  const handleMulti = useCallback(() => {
-    if (input.trim().length < 3) return;
-    sessionStorage.setItem("decidenow_room_title", input.trim());
-    window.location.href = "/room/create";
-  }, [input]);
-
-  /* ---------- 选择后 ---------- */
   const handleSelect = useCallback(() => {
-    setSelectedIndex(currentIndex);
-    setDecisionData({
-      title: input,
-      completedAt: new Date().toISOString(),
-      options: options.map((o) => ({
-        id: String(Math.random()),
-        name: o.name,
-        description: o.description,
-        priceHint: o.priceHint,
-        locationHint: o.locationHint,
-        scoreCard: JSON.stringify(o.scoreCard),
-      })),
-      selectedId: String(currentIndex),
-    });
+    setSelectedIdx(currentIndex);
     setView("result");
-  }, [currentIndex, options, input]);
+  }, [currentIndex]);
 
-  /* ========================================
-     Loading
-     ======================================== */
+  const handleJoinRoom = () => {
+    if (joinCode.length >= 4) window.location.href = `/room/${joinCode}`;
+  };
+
+  const sel = view === "result" ? options[selectedIdx] : null;
+
+  /* ---- Loading ---- */
   if (view === "loading") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-10 px-8"
-        style={{ background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)" }}>
-        {/* 返回按钮 */}
-        <button
-          onClick={() => { setView("input"); setErrorMsg(null); }}
-          className="absolute left-6 top-10 text-xs font-medium text-foreground/30 hover:text-primary transition-colors"
-        >
-          ← 取消
-        </button>
-
-        <div className="animate-breathe relative">
-          <div className="absolute inset-0 rounded-full bg-primary/10 blur-2xl" style={{ width: 120, height: 120, left: -20, top: -20 }} />
-          <Sparkles className="relative z-10 mx-auto h-14 w-14 text-primary" />
-        </div>
-        <p className="text-xl font-bold text-foreground">正在为你思考...</p>
-        <div className="flex w-full max-w-xs flex-col gap-3">
-          {[
-            { icon: "🔍", label: "解析你的需求", detail: "理解约束条件" },
-            { icon: "🤖", label: "AI 匹配检索", detail: "筛选最佳选项" },
-            { icon: "✨", label: "生成推荐结果", detail: "撰写个性化评语" },
-          ].map((step, i) => (
-            <div
-              key={step.label}
-              className="animate-float-up flex items-center gap-4 rounded-2xl bg-white/60 backdrop-blur-sm px-5 py-3.5 border border-foreground/5 shadow-sm"
-              style={{ animationDelay: `${i * 0.25}s` }}
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground/[0.04] text-xl">{step.icon}</span>
-              <div className="text-left">
-                <p className="text-sm font-semibold text-foreground">{step.label}</p>
-                <p className="text-xs text-muted-foreground">{step.detail}</p>
-              </div>
-              {i < 2 && <span className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-primary/60" />}
-            </div>
-          ))}
-        </div>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6">
+        <Sparkles className="h-10 w-10 animate-pulse text-primary" />
+        <p className="text-lg font-semibold text-foreground">正在为你思考...</p>
+        <p className="text-sm text-muted-foreground">AI 正在筛选最佳选项</p>
+        <button onClick={() => setView("input")} className="text-xs text-muted-foreground/50 hover:text-primary mt-4">取消</button>
       </div>
     );
   }
 
-  /* ========================================
-     Cards — Tinder 式画廊
-     ======================================== */
+  /* ---- Cards ---- */
   if (view === "cards" && options.length > 0) {
     return (
-      <div className="animate-page-in flex min-h-screen flex-col px-5 py-8 safe-top"
-        style={{ background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)" }}>
-        {/* 顶部 */}
-        <div className="mb-8 flex items-center justify-between">
-          <button
-            onClick={() => { setView("input"); setInput(""); }}
-            className="rounded-xl bg-white/60 backdrop-blur-sm border border-foreground/5 px-4 py-2 text-xs font-medium text-foreground/50 hover:text-primary hover:border-primary/20 transition-all duration-300"
-          >
-            ← 重新输入
-          </button>
-          <span className="text-xs font-medium uppercase tracking-widest text-foreground/20">
-            {currentIndex + 1} / {options.length}
-          </span>
+      <div className="flex min-h-screen flex-col bg-background px-4 py-6 safe-top">
+        <div className="mb-6 flex items-center justify-between">
+          <button onClick={() => { setView("input"); setInput(""); }} className="text-sm text-muted-foreground/60 hover:text-primary transition-colors">← 重新输入</button>
+          <span className="text-xs font-medium tracking-widest text-muted-foreground/30">{currentIndex + 1}/{options.length}</span>
         </div>
-
-        {/* 卡片 */}
-        <div className="flex flex-1 flex-col items-center justify-center pb-20">
-          <div className="animate-card-in w-full">
-            <OptionCard
-              option={options[currentIndex]}
-              index={currentIndex}
-              total={options.length}
-              onSelect={handleSelect}
-              onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-              onNext={() => setCurrentIndex((i) => Math.min(options.length - 1, i + 1))}
-            />
-          </div>
+        <div className="flex flex-1 flex-col items-center justify-center pb-12">
+          <OptionCard option={options[currentIndex]} index={currentIndex} total={options.length}
+            onSelect={handleSelect}
+            onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+            onNext={() => setCurrentIndex((i) => Math.min(options.length - 1, i + 1))} />
         </div>
-
-        {/* 底部提示 */}
-        <p className="text-center text-xs text-foreground/15">
-          左右滑动切换选项
-        </p>
+        <p className="text-center text-xs text-muted-foreground/25">左右滑动切换</p>
       </div>
     );
   }
 
-  /* ========================================
-     Result — 结算高光动画
-     ======================================== */
-  if (view === "result" && decisionData) {
-    const sel = decisionData.options[selectedIndex];
-    const others = decisionData.options.filter((_, i) => i !== selectedIndex);
-
+  /* ---- Result ---- */
+  if (view === "result" && sel) {
     return (
-      <div className="animate-page-in flex min-h-screen flex-col items-center justify-center gap-5 bg-background px-6 text-center safe-top safe-bottom overflow-hidden">
-        {/* 阶段 1: 高光扫过 */}
-        <div className="animate-glow-sweep absolute inset-0" />
-
-        {/* 阶段 2: 胜出者放大+光晕 */}
-        <div className="animate-stage-win relative z-10">
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 mx-auto mb-4">
-            <CheckCircle2 className="h-12 w-12 text-primary" />
-          </div>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-background px-6 text-center safe-top safe-bottom">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 animate-pop">
+          <Sparkles className="h-10 w-10 text-primary" />
         </div>
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary/70">决定时刻</p>
+        <h2 className="text-3xl font-extrabold text-foreground">{sel.name}</h2>
+        <p className="text-sm text-muted-foreground max-w-xs italic">&ldquo;{sel.description}&rdquo;</p>
 
-        {/* 阶段 3: 印章盖下 */}
-        <p className="animate-stamp relative z-10 text-lg font-black uppercase tracking-[0.4em]"
-           style={{ color: "#B8935A", transform: "rotate(-5deg)" }}>
-          决定时刻
-        </p>
+        {sel.priceHint && <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">💰 {sel.priceHint}</span>}
+        {sel.locationHint && <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">📍 {sel.locationHint}</span>}
 
-        <h2 className="animate-float-up relative z-10 text-4xl font-extrabold leading-tight text-foreground">
-          {sel.name}
-        </h2>
-        <p className="animate-float-up relative z-10 text-base italic leading-relaxed text-muted-foreground max-w-xs">
-          &ldquo;{sel.description}&rdquo;
-        </p>
-
-        {/* 阶段 4: 失败者褪色 */}
-        {others.length > 0 && (
-          <div className="animate-stage-fade flex flex-wrap justify-center gap-3">
-            {others.map((o, i) => (
-              <span key={i} className="text-xs text-muted-foreground line-through">
-                {o.name}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="flex gap-2 relative z-10">
-          {sel.priceHint && (
-            <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">💰 {sel.priceHint}</span>
-          )}
+        <div className="flex gap-3 mt-2">
           {sel.locationHint && (
-            <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">📍 {sel.locationHint}</span>
+            <Button onClick={() => window.open(`https://uri.amap.com/search?keyword=${encodeURIComponent(sel.name)}`, "_blank")} size="lg">🧭 导航</Button>
           )}
+          <Button onClick={async () => {
+            const t = `🎯 DecideNow: ${sel.name} — ${sel.description}`;
+            if (navigator.share) await navigator.share({ title: "我的决定", text: t }).catch(() => {});
+            else { await navigator.clipboard.writeText(t); alert("已复制！"); }
+          }} variant="outline" size="lg">📤 分享</Button>
+          <Button onClick={() => { setView("input"); setInput(""); }} variant="ghost" size="lg">再来</Button>
         </div>
-
-        <div className="flex gap-3 mt-2 relative z-10">
-          {sel.locationHint && (
-            <Button onClick={() => window.open(`https://uri.amap.com/search?keyword=${encodeURIComponent(sel.name)}`, "_blank")} size="lg" className="gap-2 rounded-2xl">
-              <Navigation className="h-4 w-4" /> 导航
-            </Button>
-          )}
-          <Button
-            onClick={async () => {
-              const text = `🎯 DecideNow 帮我做了决定！\n${sel.name}\n${sel.description}`;
-              if (navigator.share) await navigator.share({ title: "我的决定", text }).catch(() => {});
-              else { await navigator.clipboard.writeText(text); alert("已复制分享内容 📋"); }
-            }}
-            variant="outline" size="lg" className="gap-2 rounded-2xl">
-            <Share2 className="h-4 w-4" /> 分享
-          </Button>
-          <Button onClick={() => { setView("input"); setInput(""); }} variant="ghost" size="lg" className="gap-2 rounded-2xl">
-            <RotateCcw className="h-4 w-4" /> 再来
-          </Button>
-        </div>
-
-        <p className="mt-6 text-xs text-muted-foreground/25 relative z-10">
-          由 <span className="font-semibold text-primary">DecideNow</span> 生成
-        </p>
+        <p className="mt-6 text-xs text-muted-foreground/20">DecideNow</p>
       </div>
     );
   }
 
-  /* ========================================
-     Error
-     ======================================== */
+  /* ---- Error ---- */
   if (view === "error") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-8 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center">
         <p className="text-lg font-semibold text-foreground">暂时无法生成</p>
         <p className="text-sm text-muted-foreground">{errorMsg}</p>
-        <Button onClick={() => setView("input")} variant="outline">← 返回重试</Button>
+        <Button onClick={() => setView("input")} variant="outline">← 返回</Button>
       </div>
     );
   }
 
-  /* ========================================
-     Input (main)
-     ======================================== */
+  /* ---- Input (Home) ---- */
   return (
-    <main className="flex min-h-screen flex-col safe-top safe-bottom"
-      style={{
-        background: "linear-gradient(175deg, #F6F3ED 0%, #EFEBE3 35%, #F8F5F0 100%)",
-      }}
-    >
-      <div className={`mx-auto flex w-full max-w-lg flex-1 flex-col px-6 pt-16 ${input.trim().length >= 3 ? "pb-36" : ""}`}>
-        {/* 顶部导航 */}
-        <div className="mb-12 flex items-center justify-between">
-          <span className="text-sm font-bold tracking-[0.15em] text-foreground/50">
-            DECIDENOW
-          </span>
+    <main className="flex min-h-screen flex-col bg-background safe-top">
+      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-5 pt-12">
+
+        {/* Header */}
+        <div className="mb-14 flex items-center justify-between">
+          <span className="text-xs font-bold tracking-[0.2em] text-foreground/30">DECIDENOW</span>
           <div className="flex items-center gap-3">
-            {!showJoin ? (
-              <button
-                onClick={() => setShowJoin(true)}
-                className="text-xs font-medium text-foreground/35 hover:text-primary transition-colors flex items-center gap-1"
-              >
-                <LogIn className="h-3 w-3" />
-                加入投票
-              </button>
-            ) : (
-              <div className="flex items-center gap-1.5 animate-float-up">
-                <input
-                  value={joinCode}
-                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                  placeholder="输入 6 位分享码"
-                  maxLength={6}
-                  className="w-32 rounded-xl border border-foreground/10 bg-white/60 px-3 py-1.5 text-xs font-mono tracking-widest placeholder:text-foreground/20 focus:outline-none focus:border-primary/40"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && joinCode.length >= 4) {
-                      window.location.href = `/room/${joinCode}`;
-                    }
-                  }}
-                />
-                <button
-                  onClick={() => { if (joinCode.length >= 4) window.location.href = `/room/${joinCode}`; }}
-                  disabled={joinCode.length < 4}
-                  className="rounded-lg bg-primary px-2.5 py-1.5 text-[10px] font-bold text-white disabled:opacity-30 transition-all hover:brightness-110"
-                >
-                  进入
-                </button>
-                <button onClick={() => { setShowJoin(false); setJoinCode(""); }} className="text-foreground/20 hover:text-foreground/50">
-                  <X className="h-3.5 w-3.5" />
-                </button>
+            {showJoin ? (
+              <div className="flex items-center gap-1.5 animate-in">
+                <input value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                  placeholder="分享码" maxLength={6}
+                  className="w-28 rounded-lg border border-border bg-white px-3 py-2 text-xs font-mono tracking-widest placeholder:text-foreground/15 focus:outline-none focus:border-primary/40" />
+                <button onClick={handleJoinRoom} disabled={joinCode.length < 4}
+                  className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white disabled:opacity-30">进入</button>
+                <button onClick={() => { setShowJoin(false); setJoinCode(""); }} className="text-foreground/20 hover:text-foreground/50 text-xs">✕</button>
               </div>
+            ) : (
+              <button onClick={() => setShowJoin(true)} className="text-xs text-foreground/30 hover:text-primary transition-colors flex items-center gap-1">
+                <LogIn className="h-3 w-3" />加入
+              </button>
             )}
-            <button
-              onClick={() => window.location.href = "/history"}
-              className="text-xs font-medium text-foreground/35 hover:text-primary transition-colors"
-            >
-              我的档案
-            </button>
           </div>
         </div>
 
-        {/* 主标题 */}
-        <h1 className="mb-10 text-[2.75rem] font-black leading-[1.1] tracking-[-0.02em] text-foreground">
-          今天在纠结<br />什么？
-        </h1>
-
-        {/* 输入区域 */}
-        <div className={input.trim().length >= 3 ? "pb-28" : ""}>
-          <MapPin className="h-3 w-3 text-muted-foreground/40" />
-          {location ? (
-            <span className="text-muted-foreground/60">
-              基于 <strong className="text-foreground/70">{location}</strong> 推荐
-            </span>
-          ) : (
-            <input
-              placeholder="输入你的区域（如 徐汇区）"
-              className="flex-1 rounded-lg border border-foreground/8 bg-white/40 px-2.5 py-1.5 text-xs placeholder:text-foreground/15 focus:outline-none focus:border-primary/30"
-              onBlur={(e) => { if (e.target.value.trim()) setLocation(e.target.value.trim()); }}
-              onKeyDown={(e) => { if (e.key === "Enter" && e.currentTarget.value.trim()) { setLocation(e.currentTarget.value.trim()); e.currentTarget.blur(); } }}
-            />
-          )}
+        {/* Hero */}
+        <div className="mb-10">
+          <h1 className="text-[2.5rem] font-extrabold leading-[1.15] tracking-[-0.02em] text-foreground">
+            今天<br />纠结什么？
+          </h1>
         </div>
 
-        {/* 无边界输入框 */}
-        <div className="relative mb-6">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={placeholder}
-            rows={4}
-            className="input-zen w-full resize-none text-lg leading-relaxed"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                if (mode === "single") handleSingle();
-                else handleMulti();
-              }
-            }}
-          />
-          {!input && (
-            <span className="absolute right-4 top-4 h-5 w-0.5 animate-pulse bg-primary/40" />
-          )}
+        {/* Location hint */}
+        <div className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground/50">
+          <MapPin className="h-3 w-3" />
+          <span>AI 基于你的位置精准推荐</span>
         </div>
 
-        {/* 快捷胶囊 —— 交错入场 */}
-        {!input && (
-          <div className="mb-8 grid animate-float-up stagger grid-cols-2 gap-2">
-            {CAPSULES.map((c) => (
-              <button
-                key={c.label}
-                onClick={() => handleCapsule(c.label)}
-                className="gpu flex items-center gap-2 rounded-2xl border border-foreground/6 bg-white/60 px-4 py-3 text-sm font-medium text-foreground/65 backdrop-blur-sm transition-all duration-300 ease-out-expo hover:border-primary/30 hover:text-primary hover:bg-white hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97]"
-              >
-                <span className="text-lg">{c.icon}</span>
-                <span className="truncate">{c.label}</span>
-              </button>
-            ))}
+        {/* Input */}
+        <textarea value={input} onChange={(e) => setInput(e.target.value)}
+          placeholder="比如：三个人，人均100，徐家汇吃辣..."
+          rows={3}
+          className="input-premium mb-8 resize-none leading-relaxed"
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
+        />
+
+        {/* Submit buttons */}
+        {input.trim().length >= 3 && (
+          <div className="flex gap-3 animate-in pb-8">
+            <Button onClick={handleSubmit} size="lg" className="flex-1 gap-2 rounded-xl text-[15px] font-semibold shadow-lg shadow-primary/20">
+              <Sparkles className="h-4 w-4" /> 帮我决定
+            </Button>
+            <Button onClick={() => { sessionStorage.setItem("decidenow_room_title", input.trim()); window.location.href = "/room/create"; }}
+              variant="outline" size="lg" className="flex-1 gap-2 rounded-xl text-[15px]">
+              <Users className="h-4 w-4" /> 邀请朋友
+            </Button>
           </div>
         )}
 
-        {/* 悬浮动作条 —— 弹簧滑入 */}
-        {input.trim().length >= 3 && (
-          <div className="animate-slide-up fixed inset-x-0 bottom-8 z-50 flex justify-center gap-3 px-6">
-            <Button
-              onClick={() => { setMode("single"); handleSingle(); }}
-              size="lg"
-              className="gpu gap-2 rounded-full px-8 shadow-lg shadow-primary/20 transition-all duration-300 ease-out-expo hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-95"
-            >
-              <Sparkles className="h-4 w-4" />
-              帮我决定
-            </Button>
-            <Button
-              onClick={() => { setMode("multi"); handleMulti(); }}
-              variant="outline"
-              size="lg"
-              className="gpu gap-2 rounded-full px-8 shadow-sm backdrop-blur-sm transition-all duration-300 ease-out-expo hover:shadow-md hover:-translate-y-1 active:scale-95"
-            >
-              <Users className="h-4 w-4" />
-              邀请朋友
-            </Button>
+        {/* Capsules */}
+        {!input && (
+          <div className="grid grid-cols-3 gap-2 animate-in">
+            {[
+              { icon: "🍸", label: "周末微醺" },
+              { icon: "🏕️", label: "秋游去哪" },
+              { icon: "🎬", label: "今晚电影" },
+              { icon: "💕", label: "约会晚餐" },
+              { icon: "☕", label: "自习咖啡" },
+              { icon: "🍜", label: "深夜食堂" },
+            ].map((c) => (
+              <button key={c.label} onClick={() => setInput(c.label)}
+                className="card-premium flex items-center gap-2 px-4 py-3 text-sm font-medium text-foreground/70 hover:text-primary transition-colors">
+                <span className="text-base">{c.icon}</span>
+                <span>{c.label}</span>
+              </button>
+            ))}
           </div>
         )}
       </div>
