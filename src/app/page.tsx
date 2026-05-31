@@ -10,39 +10,51 @@ import type { DecisionOption } from "@/lib/types";
 type View = "input" | "loading" | "cards" | "result" | "error";
 
 /* 基于时段和日期的智能标签推荐 */
+function shuffle<T>(arr: T[], n: number): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a.slice(0, n);
+}
+
 function getTimeContext() {
   const now = new Date();
   const hour = now.getHours();
-  // Weekend detection available for future use: now.getDay()
 
-  if (hour >= 6 && hour < 10) {
-    return { label: "清晨灵感", tags: [
-      { icon: "☕", label: "晨间咖啡" }, { icon: "🥐", label: "早午套餐" }, { icon: "🏃", label: "晨跑路线" },
-      { icon: "📚", label: "周末自习" }, { icon: "🍳", label: "早餐推荐" }, { icon: "🧘", label: "瑜伽体验" },
-    ]};
-  }
-  if (hour >= 10 && hour < 14) {
-    return { label: "午间推荐", tags: [
-      { icon: "🍜", label: "午餐去哪" }, { icon: "🥗", label: "轻食沙拉" }, { icon: "🍱", label: "一人食光" },
-      { icon: "💻", label: "共享办公" }, { icon: "🛒", label: "午休逛逛" }, { icon: "☀️", label: "户外散步" },
-    ]};
-  }
-  if (hour >= 14 && hour < 18) {
-    return { label: "午后时光", tags: [
-      { icon: "🍰", label: "下午茶约" }, { icon: "☕", label: "自习咖啡" }, { icon: "🎬", label: "今晚电影" },
-      { icon: "💕", label: "约会晚餐" }, { icon: "🍸", label: "下班微醺" }, { icon: "🎂", label: "生日派对" },
-    ]};
-  }
-  if (hour >= 18 && hour < 23) {
-    return { label: "晚间消遣", tags: [
-      { icon: "🍸", label: "今晚微醺" }, { icon: "🍜", label: "深夜食堂" }, { icon: "🎬", label: "电影推荐" },
-      { icon: "🎤", label: "KTV唱歌" }, { icon: "🍻", label: "精酿酒吧" }, { icon: "🌃", label: "夜景打卡" },
-    ]};
-  }
-  return { label: "夜猫推荐", tags: [
+  const morning = [
+    { icon: "☕", label: "晨间咖啡" }, { icon: "🥐", label: "早午套餐" }, { icon: "🏃", label: "晨跑路线" },
+    { icon: "📚", label: "周末自习" }, { icon: "🍳", label: "早餐推荐" }, { icon: "🧘", label: "瑜伽体验" },
+    { icon: "🥛", label: "健康轻食" }, { icon: "🚴", label: "骑行路线" }, { icon: "🎧", label: "播客推荐" },
+    { icon: "📰", label: "今日热点" }, { icon: "🌿", label: "公园散步" }, { icon: "🍞", label: "面包甜品" },
+  ];
+  const noon = [
+    { icon: "🍜", label: "午餐去哪" }, { icon: "🥗", label: "轻食沙拉" }, { icon: "🍱", label: "一人食光" },
+    { icon: "💻", label: "共享办公" }, { icon: "🛒", label: "午休逛逛" }, { icon: "☀️", label: "户外散步" },
+    { icon: "🍣", label: "日料推荐" }, { icon: "🌮", label: "异国料理" }, { icon: "🍲", label: "火锅去哪" },
+    { icon: "🧋", label: "奶茶推荐" }, { icon: "📸", label: "打卡拍照" }, { icon: "🎯", label: "桌游组局" },
+  ];
+  const afternoon = [
+    { icon: "🍰", label: "下午茶约" }, { icon: "☕", label: "自习咖啡" }, { icon: "🎬", label: "今晚电影" },
+    { icon: "💕", label: "约会晚餐" }, { icon: "🍸", label: "下班微醺" }, { icon: "🎂", label: "生日派对" },
+    { icon: "🛍️", label: "周末逛街" }, { icon: "🎨", label: "看展推荐" }, { icon: "📖", label: "书店推荐" },
+    { icon: "🏋️", label: "健身去哪" }, { icon: "💆", label: "按摩SPA" }, { icon: "🎵", label: "现场音乐" },
+  ];
+  const evening = [
+    { icon: "🍸", label: "今晚微醺" }, { icon: "🍜", label: "深夜食堂" }, { icon: "🎬", label: "电影推荐" },
+    { icon: "🎤", label: "KTV唱歌" }, { icon: "🍻", label: "精酿酒吧" }, { icon: "🌃", label: "夜景打卡" },
+    { icon: "🎮", label: "电竞开黑" }, { icon: "🕹️", label: "电玩城里" }, { icon: "🍖", label: "烧烤撸串" },
+    { icon: "💃", label: "夜店蹦迪" }, { icon: "🎱", label: "台球桌游" }, { icon: "🏀", label: "夜间球场" },
+  ];
+  const night = [
     { icon: "🍜", label: "深夜食堂" }, { icon: "🍸", label: "深夜酒吧" }, { icon: "🎮", label: "开黑地点" },
     { icon: "🎬", label: "午夜电影" }, { icon: "🍲", label: "通宵火锅" }, { icon: "🎵", label: "现场音乐" },
-  ]};
+    { icon: "📱", label: "深夜好物" }, { icon: "🎧", label: "助眠歌单" }, { icon: "🕯️", label: "晚安仪式" },
+  ];
+
+  if (hour >= 6 && hour < 10) return { label: "清晨灵感", tags: shuffle(morning, 6) };
+  if (hour >= 10 && hour < 14) return { label: "午间推荐", tags: shuffle(noon, 6) };
+  if (hour >= 14 && hour < 18) return { label: "午后时光", tags: shuffle(afternoon, 6) };
+  if (hour >= 18 && hour < 23) return { label: "晚间消遣", tags: shuffle(evening, 6) };
+  return { label: "夜猫推荐", tags: shuffle(night, 6) };
 }
 
 export default function Home() {
