@@ -6,6 +6,8 @@ import { Sparkles, Users, MapPin, LogIn, Navigation } from "lucide-react";
 import { OptionCard } from "@/components/OptionCard";
 import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
 import type { DecisionOption } from "@/lib/types";
+import { Metrics } from "@/lib/tracker";
+import { useEffect } from "react";
 
 type View = "input" | "loading" | "cards" | "result" | "error";
 
@@ -60,6 +62,9 @@ function getTimeContext() {
 export default function Home() {
   const [input, setInput] = useState("");
   const [view, setView] = useState<View>("input");
+
+  // 首次访问埋点
+  useEffect(() => { Metrics.visit(); }, []);
   const [options, setOptions] = useState<DecisionOption[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [errorMsg, setErrorMsg] = useState("");
@@ -71,6 +76,7 @@ export default function Home() {
 
   const handleSubmit = useCallback(async () => {
     if (input.trim().length < 3) return;
+    Metrics.activate();
     setView("loading");
     setErrorMsg("");
     try {
@@ -104,6 +110,7 @@ export default function Home() {
   }, [input]);
 
   const handleSelect = useCallback(() => {
+    Metrics.decisionCompleted("single", currentIndex === 0);
     setSelectedIdx(currentIndex);
     setView("result");
   }, [currentIndex]);

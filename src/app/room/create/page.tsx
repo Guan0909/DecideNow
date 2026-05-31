@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, X, Sparkles, Loader2, Share2, Wand2, Copy, Check } from "lucide-react";
+import { Metrics } from "@/lib/tracker";
 
 const SYSTEM_PROMPT = `你是 DecideNow 的投票助手。根据用户输入的主题和地点，生成 2-4 个投票选项。每个选项必须包含一个具体的推荐地点。返回 JSON: [{"name":"密室逃脱","location":"X先生密室（徐汇店）"}]
 name 不超过10字，location 包含店名+区域，不超过20字。`;
@@ -61,6 +62,7 @@ export default function CreateRoom() {
       const res = await fetch("/api/rooms", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: title.trim(), options: valid.map((o) => o.trim()), isAnonymous, deadlineHours }) });
       if (!res.ok) { const e = await res.json(); throw new Error(e.error || "创建失败"); }
       setResult(await res.json());
+      Metrics.roomCreated();
     } catch (err) { setError(err instanceof Error ? err.message : "创建失败"); } finally { setLoading(false); }
   }
 
