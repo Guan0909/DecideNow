@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { VoteProgress } from "@/components/VoteProgress";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Loader2,
   AlertCircle,
@@ -172,67 +171,33 @@ export default function VotePage() {
         </div>
       </div>
 
-      {/* 投票进度 */}
+      {/* 投票进度（可点击投票） */}
       <VoteProgress
         options={room.decision.options}
         totalVotes={totalVotes}
         selectedId={votedId || selectedId}
         isClosed={isFinished}
         winnerId={winner?.id ?? null}
+        onSelect={!votedId && !isFinished ? setSelectedId : undefined}
       />
 
-      {/* 投票区（未投票 + 未截止） */}
-      {!votedId && !isFinished && (
-        <div className="mt-6 flex flex-col gap-4">
-          <p className="text-sm font-medium text-foreground">
-            选择你的答案：
-          </p>
-          <div className="flex flex-col gap-2">
-            {room.decision.options.map((option) => (
-              <button
-                key={option.id}
-                onClick={() => setSelectedId(option.id)}
-                className={`rounded-xl border-2 p-4 text-left transition-all ${
-                  selectedId === option.id
-                    ? "border-primary bg-primary/5 shadow-sm"
-                    : "border-border hover:border-primary/30"
-                }`}
-              >
-                <span className="text-sm font-medium">{option.name}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* 理由（可选） */}
-          <Textarea
+      {/* 投票操作（未投票 + 未截止） */}
+      {!votedId && !isFinished && selectedId && (
+        <div className="mt-4 flex flex-col gap-3 animate-in">
+          <textarea
             placeholder="说两句...（可选）"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="min-h-[60px]"
+            rows={2}
+            className="input-premium resize-none text-sm"
           />
-
           <div className="flex gap-2">
-            <Button
-              onClick={handleVote}
-              disabled={!selectedId || voting}
-              size="lg"
-              className="flex-1 gap-2 rounded-2xl text-base font-semibold"
-            >
-              {voting ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Send className="h-5 w-5" />
-              )}
-              {voting ? "投票中..." : "投票"}
+            <Button onClick={handleVote} disabled={!selectedId || voting} size="lg" className="flex-1 gap-2">
+              {voting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+              {voting ? "投票中..." : "确认投票"}
             </Button>
-            <Button
-              onClick={handleShare}
-              variant="outline"
-              size="lg"
-              className="gap-2 rounded-2xl"
-            >
-              <Share2 className="h-4 w-4" />
-              拉票
+            <Button onClick={handleShare} variant="outline" size="lg" className="gap-2">
+              <Share2 className="h-4 w-4" />拉票
             </Button>
           </div>
         </div>
