@@ -108,50 +108,32 @@
     @apply placeholder:text-foreground/25;
     @apply focus:outline-none focus:border-primary/50;
   }
-  /* Dark mode overrides */
+  /* Dark mode overrides — simplify selectors for PostCSS compatibility */
   @media (prefers-color-scheme: dark) {
     .input-premium {
-      @apply bg-card border-border text-foreground placeholder:text-foreground/35;
+      @apply bg-card border-border text-foreground;
     }
     .card-premium {
       @apply bg-card border-border;
     }
-    /* 所有 muted 底色元素提亮 */
-    .bg-muted, .bg-muted\/50, .bg-muted\/30 {
-      @apply bg-muted;
-    }
-    /* 标签胶囊 */
-    .bg-foreground\/\[0\.03\], .bg-foreground\/\[0\.04\], .bg-foreground\/\[0\.05\] {
-      background: hsl(var(--muted));
-    }
-    /* 白色底元素 → 卡片色 */
-    .bg-white, .bg-white\/50, .bg-white\/60, .bg-white\/70, .bg-white\/80, .bg-white\/90 {
+    .bg-white,
+    [class*="bg-white/"] {
       @apply bg-card;
     }
-    /* 琥珀色提示条暗色适配 */
     .bg-amber-50 {
       background: rgba(180, 120, 20, 0.12);
-    }
-    .border-amber-200\/50 {
-      border-color: rgba(180, 120, 20, 0.25);
-    }
-    .text-amber-800 {
-      color: #E8C56D;
-    }
-    .text-amber-600\/70 {
-      color: rgba(210, 165, 70, 0.8);
     }
     .bg-amber-100 {
       background: rgba(180, 120, 20, 0.2);
     }
+    .text-amber-800 {
+      color: #E8C56D;
+    }
     .text-amber-700 {
       color: #D4A840;
     }
-    .border-amber-200 {
-      border-color: rgba(180, 120, 20, 0.25);
-    }
-    .placeholder\\:text-amber-400\\/60::placeholder {
-      color: rgba(200, 150, 50, 0.5);
+    .text-amber-600\/70 {
+      color: rgba(210, 165, 70, 0.8);
     }
   }
 }
