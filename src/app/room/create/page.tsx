@@ -207,20 +207,56 @@ export default function CreateRoom() {
           )}
         </div>
 
-        <div className="flex flex-col gap-3 rounded-2xl bg-foreground/[0.03] p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground/70">匿名投票</span>
-            <button onClick={() => setIsAnonymous(!isAnonymous)} className={`relative h-6 w-11 rounded-full transition-colors ${isAnonymous ? "bg-primary" : "bg-foreground/10"}`}>
+        {/* 投票设置 */}
+        <div className="flex flex-col gap-4">
+          <p className="text-sm font-semibold text-foreground/60">投票设置</p>
+
+          {/* 匿名开关 */}
+          <div className="flex items-center justify-between rounded-2xl bg-foreground/[0.03] px-5 py-4">
+            <div>
+              <span className="text-sm font-medium text-foreground">匿名投票</span>
+              <p className="text-xs text-muted-foreground mt-0.5">参与者身份保密</p>
+            </div>
+            <button onClick={() => setIsAnonymous(!isAnonymous)} className={`relative h-6 w-11 rounded-full transition-colors shrink-0 ${isAnonymous ? "bg-primary" : "bg-foreground/10"}`}>
               <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${isAnonymous ? "left-[22px]" : "left-0.5"}`} />
             </button>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground/70">截止时间</span>
-            <select value={deadlineHours} onChange={(e) => setDeadlineHours(Number(e.target.value))} className="rounded-xl border border-foreground/10 bg-white px-3 py-1.5 text-sm">
-              {[1, 2, 6, 12, 24, 72, 168].map((h) => (
-                <option key={h} value={h}>{h >= 24 ? `${h / 24} 天后` : `${h} 小时后`}</option>
+
+          {/* 截止时间 */}
+          <div className="rounded-2xl bg-foreground/[0.03] px-5 py-4">
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <span className="text-sm font-medium text-foreground">截止时间</span>
+                <p className="text-xs text-muted-foreground mt-0.5">超过后自动结束投票</p>
+              </div>
+              <span className="rounded-xl bg-white/60 px-3 py-1.5 text-xs font-semibold text-primary border border-primary/20">
+                {deadlineHours >= 24 ? `${deadlineHours / 24} 天后截止` : `${deadlineHours} 小时后截止`}
+              </span>
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { label: "1h", value: 1 },
+                { label: "2h", value: 2 },
+                { label: "6h", value: 6 },
+                { label: "12h", value: 12 },
+                { label: "1天", value: 24 },
+                { label: "2天", value: 48 },
+                { label: "3天", value: 72 },
+                { label: "7天", value: 168 },
+              ].map(({ label, value }) => (
+                <button
+                  key={value}
+                  onClick={() => setDeadlineHours(value)}
+                  className={`rounded-xl py-2.5 text-xs font-medium transition-all ${
+                    deadlineHours === value
+                      ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                      : "bg-white/50 text-muted-foreground hover:bg-white hover:text-foreground"
+                  }`}
+                >
+                  {label}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
         </div>
 
