@@ -62,7 +62,7 @@ export default function CreateRoom() {
       const res = await fetch("/api/rooms", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: title.trim(), options: valid.map((o) => o.trim()), isAnonymous, deadlineHours }) });
       if (!res.ok) { const e = await res.json(); throw new Error(e.error || "创建失败"); }
       setResult(await res.json());
-      Metrics.roomCreated();
+      Metrics.roomCreated(valid.length);
     } catch (err) { setError(err instanceof Error ? err.message : "创建失败"); } finally { setLoading(false); }
   }
 
