@@ -76,9 +76,10 @@ export default function Home() {
 
   const handleSubmit = useCallback(async () => {
     if (input.trim().length < 3) return;
-    Metrics.activate();
+    Metrics.activate("single");
     setView("loading");
     setErrorMsg("");
+    const startTime = Date.now();
     try {
       const res = await fetch("https://api.deepseek.com/chat/completions", {
         method: "POST",
@@ -100,6 +101,7 @@ export default function Home() {
       if (!m) throw new Error("格式异常");
       const parsed = JSON.parse(m[0]);
       if (!parsed.options?.length) throw new Error("未生成选项");
+      Metrics.aiGenerated(parsed.options.length, Date.now() - startTime);
       setOptions(parsed.options);
       setCurrentIndex(0);
       setView("cards");
@@ -168,14 +170,15 @@ export default function Home() {
 
         <div className="flex gap-3 mt-2">
           {sel.locationHint && (
-            <Button onClick={() => window.open(`https://uri.amap.com/search?keyword=${encodeURIComponent(sel.name)}`, "_blank")} size="lg">🧭 导航</Button>
+            <Button onClick={() => { window.open(`https://uri.amap.com/search?keyword=${encodeURIComponent(sel.name)}`, "_blank"); Metrics.navigated(); }} size="lg">🧭 导航</Button>
           )}
           <Button onClick={async () => {
+            Metrics.shareClicked("card");
             const t = `🎯 DecideNow: ${sel.name} — ${sel.description}`;
             if (navigator.share) await navigator.share({ title: "我的决定", text: t }).catch(() => {});
             else { await navigator.clipboard.writeText(t); alert("已复制！"); }
           }} variant="outline" size="lg">📤 分享</Button>
-          <Button onClick={() => { setView("input"); setInput(""); }} variant="ghost" size="lg">再来</Button>
+          <Button onClick={() => { Metrics.retry(); setView("input"); setInput(""); }} variant="ghost" size="lg">再来</Button>
         </div>
         <p className="mt-6 text-xs text-muted-foreground/20">DecideNow</p>
       </div>
