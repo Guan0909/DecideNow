@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Users, MapPin, LogIn } from "lucide-react";
+import { Sparkles, Users, MapPin, LogIn, Navigation } from "lucide-react";
 import { OptionCard } from "@/components/OptionCard";
 import { GENERATE_SYSTEM_PROMPT } from "@/lib/prompts";
 import type { DecisionOption } from "@/lib/types";
@@ -55,6 +55,8 @@ export default function Home() {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [showJoin, setShowJoin] = useState(false);
   const [joinCode, setJoinCode] = useState("");
+  const [location, setLocation] = useState<string | null>(null);
+  const [locationInput, setLocationInput] = useState("");
 
   const handleSubmit = useCallback(async () => {
     if (input.trim().length < 3) return;
@@ -68,7 +70,7 @@ export default function Home() {
           model: "deepseek-v4-flash",
           messages: [
             { role: "system", content: GENERATE_SYSTEM_PROMPT },
-            { role: "user", content: `用户需求：${input.trim()}\n\n请生成 3 个决策选项。` },
+            { role: "user", content: `用户需求：${input.trim()}${location ? `\n用户位置：${location}附近` : "\n用户未提供位置，请推荐通用热门选项"}\n\n请生成 3 个决策选项。` },
           ],
           temperature: 0.7, max_tokens: 800,
         }),
@@ -206,11 +208,56 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Location hint */}
-        <div className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground/50">
-          <MapPin className="h-3 w-3" />
-          <span>AI 基于你的位置精准推荐</span>
-        </div>
+        {/* Location */}
+        {location ? (
+          <div className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground/50">
+            <MapPin className="h-3 w-3" />
+            <span>正在为你推荐 <strong className="text-foreground/70">{location}</strong> 附近</span>
+            <button onClick={() => setLocation(null)} className="ml-1 text-[10px] text-foreground/20 hover:text-foreground/50">✕</button>
+          </div>
+        ) : (
+          <div className="mb-4 animate-in">
+            <div className="flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200/50 px-4 py-3">
+              <Navigation className="h-4 w-4 text-amber-500 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-amber-800">开启定位，推荐更精准</p>
+                <p className="text-[10px] text-amber-600/70 mt-0.5">授权位置或手动输入区域，AI 为你推荐附近真实好店</p>
+              </div>
+              <input
+                value={locationInput}
+                onChange={(e) => setLocationInput(e.target.value)}
+                placeholder="输入区域"
+                className="w-20 shrink-0 rounded-lg border border-amber-200 bg-white px-2.5 py-1.5 text-xs placeholder:text-amber-400/60 focus:outline-none focus:border-primary/40"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && locationInput.trim()) {
+                    setLocation(locationInput.trim());
+                    setLocationInput("");
+                  }
+                }}
+              />
+              <button
+                onClick={() => {
+                  if (locationInput.trim()) { setLocation(locationInput.trim()); setLocationInput(""); return; }
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                      async (pos) => {
+                        try {
+                          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&zoom=12&accept-language=zh`, { headers: { "User-Agent": "DecideNow/1.0" } });
+                          if (res.ok) { const data = await res.json(); const d = data.address || {}; setLocation(d.city_district || d.suburb || d.county || d.city || ""); }
+                        } catch { setLocation("当前位置"); }
+                      },
+                      () => { alert("请在浏览器设置中允许定位权限"); },
+                      { timeout: 8000 }
+                    );
+                  }
+                }}
+                className="shrink-0 rounded-lg bg-amber-100 px-2.5 py-1.5 text-[10px] font-semibold text-amber-700 hover:bg-amber-200 transition-colors"
+              >
+                {locationInput.trim() ? "确定" : "📍 定位"}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Input */}
         <textarea value={input} onChange={(e) => setInput(e.target.value)}
