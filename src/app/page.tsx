@@ -285,9 +285,9 @@ export default function Home() {
             <div className="grid grid-cols-3 gap-2">
               {getTimeContext().tags.map((c) => (
                 <button key={c.label} onClick={() => setInput(c.label)}
-                  className="card-premium flex items-center gap-2 px-4 py-3 text-sm font-medium text-foreground/70 hover:text-primary transition-colors">
-                  <span className="text-base">{c.icon}</span>
-                  <span>{c.label}</span>
+                  className="card-premium flex items-center gap-2 px-3 py-3 text-sm font-medium text-foreground/70 hover:text-primary transition-colors h-full min-h-[52px]">
+                  <span className="text-base shrink-0">{c.icon}</span>
+                  <span className="truncate">{c.label}</span>
                 </button>
               ))}
             </div>
