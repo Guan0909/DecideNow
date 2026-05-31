@@ -30,13 +30,13 @@ export function VoteProgress({ options, totalVotes, selectedId, isClosed, winner
             />
             <div className="relative flex items-center gap-4 p-5">
               <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold transition-all duration-500 ${
-                isWinner ? "bg-amber-100 text-amber-700 shadow-md shadow-amber-200/50" : "bg-foreground/[0.04] text-foreground/50"
+                isWinner ? "bg-amber-100 text-amber-700 shadow-md shadow-amber-200/50" : "bg-foreground/[0.06] text-foreground/65"
               }`}>
                 {isWinner ? "👑" : `${pct}%`}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[15px] font-semibold tracking-tight truncate">{option.name}</span>
+                  <span className="text-[15px] font-semibold tracking-tight truncate text-foreground">{option.name}</span>
                   {isWinner && <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold tracking-wide text-amber-700 border border-amber-200">🏆 胜出</span>}
                   {isSelected && !isClosed && <span className="shrink-0 rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-medium text-primary-foreground">已投</span>}
                 </div>

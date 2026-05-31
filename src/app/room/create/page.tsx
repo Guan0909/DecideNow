@@ -77,11 +77,11 @@ export default function CreateRoom() {
           <p className="text-xs text-muted-foreground">分享码</p>
           <div className="flex items-center gap-2">
             <p className="text-5xl font-extrabold tracking-[0.3em] text-primary">{result.shareCode}</p>
-            <button onClick={() => copy(result.shareCode)} className="rounded-xl border border-border bg-white p-2 text-foreground/40 hover:text-primary transition-colors">{copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}</button>
+            <button onClick={() => copy(result.shareCode)} className="rounded-xl border border-border bg-card p-2 text-foreground/60 hover:text-primary transition-colors">{copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}</button>
           </div>
           <div className="flex items-center gap-2 w-full max-w-[280px]">
-            <input readOnly value={result.shareUrl} className="input-premium flex-1 py-2 text-xs" />
-            <button onClick={() => copy(result.shareUrl)} className="rounded-xl border border-border bg-white px-3 py-2 text-xs font-medium hover:text-primary transition-colors">{copied ? "已复制" : "复制"}</button>
+            <input readOnly value={result.shareUrl} className="input-premium flex-1 py-2 text-xs text-foreground" />
+            <button onClick={() => copy(result.shareUrl)} className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium text-foreground/70 hover:text-primary transition-colors">{copied ? "已复制" : "复制"}</button>
           </div>
           <p className="text-xs text-muted-foreground">截止：{new Date(result.deadline).toLocaleString("zh-CN")}</p>
         </div>
