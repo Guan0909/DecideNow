@@ -91,7 +91,7 @@ export default function Home() {
           model: "deepseek-v4-flash",
           messages: [
             { role: "system", content: GENERATE_SYSTEM_PROMPT },
-            { role: "user", content: `用户需求：${input.trim()}${location ? `\n用户位置：${location}${coords ? ` (坐标: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)})` : ""}` : "\n用户未提供位置，请推荐通用热门选项"}\n\n请根据用户位置和距离约束，推荐附近真实地点。如果用户提到步行或骑行距离，优先推荐坐标周边1km内的店铺。生成 3 个决策选项。` },
+            { role: "user", content: `用户需求：${input.trim()}${location && location !== "已定位" ? `\n用户所在城市：${location}（只推荐该城市的店铺，禁止推荐其他城市）` : ""}${coords ? `\n用户精确坐标：${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}（只推荐该坐标周边 3km 内的店铺）` : ""}${!location ? "\n用户未提供位置，请推荐全国通用热门连锁品牌" : ""}\n\n严格按照用户所在城市和坐标推荐。` },
           ],
           temperature: 0.7, max_tokens: 800,
         }),
