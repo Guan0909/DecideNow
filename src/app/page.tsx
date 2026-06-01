@@ -142,7 +142,6 @@ export default function Home() {
       async (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
-        const gpsAcc = pos.coords.accuracy; // GPS 精度(米)
         setCoords({ lat, lng });
         // 反查详细地址(zoom=15=街道级, zoom=18=建筑级)
         try {
@@ -158,7 +157,6 @@ export default function Home() {
             const district = addr.city_district || addr.suburb || addr.county || "";
             const road = addr.road || addr.pedestrian || "";
             const city = addr.city || addr.town || addr.state || "";
-            const name = addr.building || addr.amenity || addr.shop || "";
             // 组合：商圈+街道（如"徐家汇·虹桥路"）或 区+市（如"南山区·深圳市"）
             const short = district
               ? (road ? `${district}·${road}` : `${district}·${city}`)
