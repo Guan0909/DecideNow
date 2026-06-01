@@ -72,6 +72,7 @@ export default function Home() {
   const [showJoin, setShowJoin] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [location, setLocation] = useState<string | null>(null);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [locationInput, setLocationInput] = useState("");
   const [locating, setLocating] = useState(false);
@@ -90,7 +91,7 @@ export default function Home() {
           model: "deepseek-v4-flash",
           messages: [
             { role: "system", content: GENERATE_SYSTEM_PROMPT },
-            { role: "user", content: `用户需求：${input.trim()}${location ? `\n用户位置：${location}附近` : "\n用户未提供位置，请推荐通用热门选项"}\n\n请生成 3 个决策选项。` },
+            { role: "user", content: `用户需求：${input.trim()}${location ? `\n用户位置：${location}${coords ? ` (坐标: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)})` : ""}` : "\n用户未提供位置，请推荐通用热门选项"}\n\n请根据用户位置和距离约束，推荐附近真实地点。如果用户提到步行或骑行距离，优先推荐坐标周边1km内的店铺。生成 3 个决策选项。` },
           ],
           temperature: 0.7, max_tokens: 800,
         }),
@@ -124,22 +125,21 @@ export default function Home() {
   };
 
   const handleLocate = () => {
-    if (!navigator.geolocation) { setLocation("上海"); setShowLocationPicker(false); return; }
+    if (!navigator.geolocation) { setLocation("上海"); setCoords(null); setShowLocationPicker(false); return; }
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
-      () => {
-        // GPS 成功即设置已定位——推荐会基于用户实际坐标更精准
+      (pos) => {
+        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setLocation("已定位");
         setShowLocationPicker(false);
         setLocating(false);
       },
       () => {
-        // GPS 拒绝则默认热门城市
-        setLocation("上海");
+        setLocation("上海"); setCoords(null);
         setShowLocationPicker(false);
         setLocating(false);
       },
-      { timeout: 5000, enableHighAccuracy: false }
+      { timeout: 5000, enableHighAccuracy: true }
     );
   };
 
@@ -278,7 +278,7 @@ export default function Home() {
                   {["上海", "北京", "深圳", "广州", "杭州", "成都", "重庆", "武汉", "南京"].map((city) => (
                     <button
                       key={city}
-                      onClick={() => { setLocation(city); setShowLocationPicker(false); }}
+                      onClick={() => { setLocation(city); setCoords(null); setShowLocationPicker(false); }}
                       className={`rounded-lg py-2 text-xs font-medium transition-colors ${
                         location === city ? "bg-primary/10 text-primary" : "text-foreground/60 hover:bg-muted"
                       }`}
