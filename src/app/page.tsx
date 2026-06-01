@@ -84,7 +84,10 @@ export default function Home() {
   const handleSubmit = useCallback(async () => {
     if (input.trim().length < 3) return;
     const loc = locationRef.current;
-    const crd = coordsRef.current;
+    // 直接把位置拼到用户输入里——最可靠的方式
+    const query = loc && loc !== "已定位"
+      ? `我在${loc}，${input.trim()}`
+      : input.trim();
     Metrics.activate("single");
     setView("loading");
     setErrorMsg("");
@@ -96,8 +99,8 @@ export default function Home() {
         body: JSON.stringify({
           model: "deepseek-v4-pro",
           messages: [
-            { role: "system", content: GENERATE_SYSTEM_PROMPT + (loc && loc !== "已定位" ? `\n\n🚨 当前任务城市：${loc}。只能推荐${loc}的店铺。禁止推荐其他城市。` : "") },
-            { role: "user", content: `${loc && loc !== "已定位" ? `【城市锁定】我在${loc}，只推荐${loc}的店。` : ""}${crd ? `【坐标】${crd.lat.toFixed(4)},${crd.lng.toFixed(4)}，推荐3km内的。` : ""}${!loc ? "【无城市】推荐全国连锁品牌。" : ""}\n需求：${input.trim()}` },
+            { role: "system", content: GENERATE_SYSTEM_PROMPT },
+            { role: "user", content: query },
           ],
           temperature: 0.7, max_tokens: 800,
         }),
