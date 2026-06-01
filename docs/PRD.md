@@ -154,7 +154,7 @@ DecideNow
 | 认证 | Supabase Auth（匿名登录） |
 | 埋点 | 自建 Analytics API → Supabase |
 | 部署 | Vercel + GitHub |
-| 域名 | decidenow.asia（已购，待绑定） |
+| 域名 | [decidenow.asia](https://decidenow.asia)（已上线） |
 | 地图导航 | 高德地图 URI Scheme |
 | 设计系统 | UI/UX Pro Max · Warm Minimalist |
 
@@ -180,7 +180,7 @@ DecideNow
 - [x] 进度条投票融合（点击即投）
 - [x] 北极星指标体系（9 事件埋点 + 8 维看板）
 - [x] 高德地图一键导航（选中后跳转高德搜索）
-- [x] 自定义域名 `decidenow.asia` 已购买，待绑定 Vercel
+- [x] 自定义域名 `decidenow.asia` 已上线
 
 ### v4.0 (规划中)
 - [ ] 决策模板 + 一键复刻
