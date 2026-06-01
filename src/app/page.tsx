@@ -143,31 +143,35 @@ export default function Home() {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         setCoords({ lat, lng });
-        // 反查详细地址(zoom=15=街道级, zoom=18=建筑级)
+
+        // 坐标→城市映射（中国主要城市边界，秒出无需API）
+        const city = getCityFromCoord(lat, lng);
+
+        // 尝试 OSM 获取更详细的街道/区（可选，失败用城市名兜底）
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=16&addressdetails=1&accept-language=zh`,
-            { headers: { "User-Agent": "DecideNow/1.0" }, signal: AbortSignal.timeout(5000) }
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=14&accept-language=zh`,
+            { headers: { "User-Agent": "DecideNow/1.0" }, signal: AbortSignal.timeout(3000) }
           );
           if (res.ok) {
             const data = await res.json();
             const addr = data.address || {};
-            const display = data.display_name || "";
-            // 优先级: 商圈/街道 > 区 > 市
             const district = addr.city_district || addr.suburb || addr.county || "";
             const road = addr.road || addr.pedestrian || "";
-            const city = addr.city || addr.town || addr.state || "";
-            // 组合：商圈+街道（如"徐家汇·虹桥路"）或 区+市（如"南山区·深圳市"）
+            const osmCity = addr.city || addr.town || "";
+            const finalCity = osmCity || city;
             const short = district
-              ? (road ? `${district}·${road}` : `${district}·${city}`)
-              : (city || display.split(",").slice(0, 2).join("·"));
+              ? (road ? `${district}·${road}` : `${district}`)
+              : finalCity;
             setLocation(short);
-          } else {
-            setLocation(`${lat.toFixed(4)},${lng.toFixed(4)} 附近`);
+            setShowLocationPicker(false);
+            setLocating(false);
+            return;
           }
-        } catch {
-          setLocation(`${lat.toFixed(4)},${lng.toFixed(4)} 附近`);
-        }
+        } catch {}
+
+        // OSM 失败→用坐标映射的城市名
+        setLocation(city);
         setShowLocationPicker(false);
         setLocating(false);
       },
@@ -179,6 +183,26 @@ export default function Home() {
       { timeout: 6000, enableHighAccuracy: true }
     );
   };
+
+  /* 坐标→中国城市映射（离线，毫秒级） */
+  function getCityFromCoord(lat: number, lng: number): string {
+    const cities: [string, number, number, number, number][] = [
+      ["上海", 30.7, 31.5, 121.0, 121.8], ["北京", 39.4, 40.2, 116.0, 116.8],
+      ["深圳", 22.4, 22.7, 113.7, 114.3], ["广州", 22.9, 23.4, 113.0, 113.6],
+      ["杭州", 30.0, 30.5, 119.8, 120.5], ["成都", 30.3, 30.9, 103.8, 104.3],
+      ["重庆", 29.1, 29.9, 106.2, 106.8], ["武汉", 30.3, 30.8, 114.0, 114.6],
+      ["南京", 31.7, 32.3, 118.5, 119.2], ["苏州", 31.0, 31.5, 120.3, 120.9],
+      ["西安", 34.0, 34.5, 108.7, 109.2], ["天津", 38.8, 39.3, 117.0, 117.6],
+      ["长沙", 28.0, 28.4, 112.8, 113.2], ["厦门", 24.3, 24.7, 117.9, 118.3],
+      ["青岛", 35.9, 36.4, 120.0, 120.6], ["郑州", 34.5, 34.9, 113.3, 113.8],
+      ["合肥", 31.6, 32.0, 117.0, 117.5], ["福州", 25.9, 26.3, 119.1, 119.5],
+      ["大连", 38.7, 39.1, 121.3, 121.9], ["宁波", 29.7, 30.0, 121.3, 121.8],
+    ];
+    for (const [name, minLat, maxLat, minLng, maxLng] of cities) {
+      if (lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng) return name;
+    }
+    return `${lat.toFixed(2)},${lng.toFixed(2)}`;
+  }
 
   const sel = view === "result" ? options[selectedIdx] : null;
 
