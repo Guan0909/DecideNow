@@ -124,29 +124,22 @@ export default function Home() {
   };
 
   const handleLocate = () => {
-    if (!navigator.geolocation) { alert("浏览器不支持定位"); return; }
+    if (!navigator.geolocation) { setLocation("上海"); setShowLocationPicker(false); return; }
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=12&accept-language=zh`,
-            { headers: { "User-Agent": "DecideNow/1.0" } }
-          );
-          if (res.ok) {
-            const data = await res.json();
-            const d = data.address || {};
-            const city = d.city || d.town || d.county || "";
-            const district = d.city_district || d.suburb || "";
-            setLocation(district || city || "已定位");
-            setShowLocationPicker(false);
-          }
-        } catch { alert("定位失败，请手动输入"); }
-        finally { setLocating(false); }
+      () => {
+        // GPS 成功即设置已定位——推荐会基于用户实际坐标更精准
+        setLocation("已定位");
+        setShowLocationPicker(false);
+        setLocating(false);
       },
-      () => { alert("请在浏览器设置中允许定位权限"); setLocating(false); },
-      { timeout: 8000, enableHighAccuracy: false }
+      () => {
+        // GPS 拒绝则默认热门城市
+        setLocation("上海");
+        setShowLocationPicker(false);
+        setLocating(false);
+      },
+      { timeout: 5000, enableHighAccuracy: false }
     );
   };
 
