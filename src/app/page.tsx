@@ -112,7 +112,7 @@ export default function Home() {
       setErrorMsg(e instanceof Error ? e.message : "未知错误");
       setView("error");
     }
-  }, [input]);
+  }, [input, location, coords]);
 
   const handleSelect = useCallback(() => {
     Metrics.decisionCompleted("single", currentIndex === 0);
