@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Users, MapPin, LogIn, Navigation } from "lucide-react";
 import { OptionCard } from "@/components/OptionCard";
@@ -73,12 +73,18 @@ export default function Home() {
   const [joinCode, setJoinCode] = useState("");
   const [location, setLocation] = useState<string | null>(null);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const locationRef = useRef(location);
+  const coordsRef = useRef(coords);
+  locationRef.current = location;
+  coordsRef.current = coords;
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [locationInput, setLocationInput] = useState("");
   const [locating, setLocating] = useState(false);
 
   const handleSubmit = useCallback(async () => {
     if (input.trim().length < 3) return;
+    const loc = locationRef.current;
+    const crd = coordsRef.current;
     Metrics.activate("single");
     setView("loading");
     setErrorMsg("");
@@ -88,10 +94,10 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
         body: JSON.stringify({
-          model: "deepseek-v4-flash",
+          model: "deepseek-v4-pro",
           messages: [
-            { role: "system", content: GENERATE_SYSTEM_PROMPT + (location && location !== "已定位" ? `\n\n🚨 当前任务城市：${location}。你只能推荐${location}的店铺。禁止推荐任何其他城市的店铺，包括上海。` : "") },
-            { role: "user", content: `⚠️ 重要：${location && location !== "已定位" ? `我在${location}，只推荐${location}的店铺，不要推荐上海的或其他城市的。` : ""}${coords ? `我在坐标(${coords.lat.toFixed(4)},${coords.lng.toFixed(4)})，推荐周边3km内的。` : ""}${!location ? "我没有指定城市，推荐全国通用连锁品牌。" : ""}\n\n我的需求：${input.trim()}` },
+            { role: "system", content: GENERATE_SYSTEM_PROMPT + (loc && loc !== "已定位" ? `\n\n🚨 当前任务城市：${loc}。只能推荐${loc}的店铺。禁止推荐其他城市。` : "") },
+            { role: "user", content: `${loc && loc !== "已定位" ? `【城市锁定】我在${loc}，只推荐${loc}的店。` : ""}${crd ? `【坐标】${crd.lat.toFixed(4)},${crd.lng.toFixed(4)}，推荐3km内的。` : ""}${!loc ? "【无城市】推荐全国连锁品牌。" : ""}\n需求：${input.trim()}` },
           ],
           temperature: 0.7, max_tokens: 800,
         }),
