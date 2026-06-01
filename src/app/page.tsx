@@ -84,10 +84,12 @@ export default function Home() {
   const handleSubmit = useCallback(async () => {
     if (input.trim().length < 3) return;
     const loc = locationRef.current;
-    // 直接把位置拼到用户输入里——最可靠的方式
-    const query = loc && loc !== "已定位"
-      ? `我在${loc}，${input.trim()}`
-      : input.trim();
+    // 位置直接拼入输入——最可靠
+    const crd = coordsRef.current;
+    const locStr = crd
+      ? `我在${loc}（精确坐标${crd.lat.toFixed(4)},${crd.lng.toFixed(4)}），请按距离排序推荐`
+      : loc ? `我在${loc}，请推荐附近的` : "";
+    const query = locStr ? `${locStr}：${input.trim()}` : input.trim();
     Metrics.activate("single");
     setView("loading");
     setErrorMsg("");
@@ -140,23 +142,33 @@ export default function Home() {
       async (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
+        const gpsAcc = pos.coords.accuracy; // GPS 精度(米)
         setCoords({ lat, lng });
-        // 反查城市名
+        // 反查详细地址(zoom=15=街道级, zoom=18=建筑级)
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=10&accept-language=zh`,
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=16&addressdetails=1&accept-language=zh`,
             { headers: { "User-Agent": "DecideNow/1.0" }, signal: AbortSignal.timeout(5000) }
           );
           if (res.ok) {
             const data = await res.json();
             const addr = data.address || {};
-            const city = addr.city || addr.town || addr.county || addr.state || "";
-            setLocation(city || `坐标(${lat.toFixed(2)},${lng.toFixed(2)})`);
+            const display = data.display_name || "";
+            // 优先级: 商圈/街道 > 区 > 市
+            const district = addr.city_district || addr.suburb || addr.county || "";
+            const road = addr.road || addr.pedestrian || "";
+            const city = addr.city || addr.town || addr.state || "";
+            const name = addr.building || addr.amenity || addr.shop || "";
+            // 组合：商圈+街道（如"徐家汇·虹桥路"）或 区+市（如"南山区·深圳市"）
+            const short = district
+              ? (road ? `${district}·${road}` : `${district}·${city}`)
+              : (city || display.split(",").slice(0, 2).join("·"));
+            setLocation(short);
           } else {
-            setLocation(`坐标(${lat.toFixed(2)},${lng.toFixed(2)})`);
+            setLocation(`${lat.toFixed(4)},${lng.toFixed(4)} 附近`);
           }
         } catch {
-          setLocation(`坐标(${lat.toFixed(2)},${lng.toFixed(2)})`);
+          setLocation(`${lat.toFixed(4)},${lng.toFixed(4)} 附近`);
         }
         setShowLocationPicker(false);
         setLocating(false);
