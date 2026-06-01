@@ -92,7 +92,15 @@ export function OptionCard({ option, index, total, onSelect, onPrev, onNext }: O
           {/* Header */}
           <div className="flex items-center justify-between px-6 pt-5 pb-3">
             <span className="text-xs font-bold text-muted-foreground/40 tracking-widest">{index + 1}/{total}</span>
-            {index === 0 && <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold text-primary">最佳推荐</span>}
+            <div className="flex items-center gap-2">
+              {option.confidence && option.confidence <= 2 && (
+                <span className="rounded-full bg-green-50 text-green-600 border border-green-200 px-2 py-0.5 text-[10px] font-semibold">✓ 已验证</span>
+              )}
+              {option.confidence === 3 && (
+                <span className="rounded-full bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 text-[10px] font-semibold">附近可能有</span>
+              )}
+              {index === 0 && <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold text-primary">最佳推荐</span>}
+            </div>
           </div>
 
           {/* Body */}

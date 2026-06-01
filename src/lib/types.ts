@@ -34,6 +34,7 @@ export interface DecisionOption {
   scoreCard: ScoreCard;
   priceHint: string;
   locationHint: string;
+  confidence?: number; // 1=确认存在, 2=大概率, 3=可能存在
 }
 
 /** 生成选项的请求 */
