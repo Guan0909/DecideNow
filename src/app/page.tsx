@@ -137,9 +137,27 @@ export default function Home() {
     if (!navigator.geolocation) { setLocation("上海"); setCoords(null); setShowLocationPicker(false); return; }
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocation("已定位");
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setCoords({ lat, lng });
+        // 反查城市名
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=10&accept-language=zh`,
+            { headers: { "User-Agent": "DecideNow/1.0" }, signal: AbortSignal.timeout(5000) }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const addr = data.address || {};
+            const city = addr.city || addr.town || addr.county || addr.state || "";
+            setLocation(city || `坐标(${lat.toFixed(2)},${lng.toFixed(2)})`);
+          } else {
+            setLocation(`坐标(${lat.toFixed(2)},${lng.toFixed(2)})`);
+          }
+        } catch {
+          setLocation(`坐标(${lat.toFixed(2)},${lng.toFixed(2)})`);
+        }
         setShowLocationPicker(false);
         setLocating(false);
       },
@@ -148,7 +166,7 @@ export default function Home() {
         setShowLocationPicker(false);
         setLocating(false);
       },
-      { timeout: 5000, enableHighAccuracy: true }
+      { timeout: 6000, enableHighAccuracy: true }
     );
   };
 
