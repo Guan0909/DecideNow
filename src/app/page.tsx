@@ -90,8 +90,8 @@ export default function Home() {
         body: JSON.stringify({
           model: "deepseek-v4-flash",
           messages: [
-            { role: "system", content: GENERATE_SYSTEM_PROMPT },
-            { role: "user", content: `用户需求：${input.trim()}${location && location !== "已定位" ? `\n用户所在城市：${location}（只推荐该城市的店铺，禁止推荐其他城市）` : ""}${coords ? `\n用户精确坐标：${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}（只推荐该坐标周边 3km 内的店铺）` : ""}${!location ? "\n用户未提供位置，请推荐全国通用热门连锁品牌" : ""}\n\n严格按照用户所在城市和坐标推荐。` },
+            { role: "system", content: GENERATE_SYSTEM_PROMPT + (location && location !== "已定位" ? `\n\n🚨 当前任务城市：${location}。你只能推荐${location}的店铺。禁止推荐任何其他城市的店铺，包括上海。` : "") },
+            { role: "user", content: `⚠️ 重要：${location && location !== "已定位" ? `我在${location}，只推荐${location}的店铺，不要推荐上海的或其他城市的。` : ""}${coords ? `我在坐标(${coords.lat.toFixed(4)},${coords.lng.toFixed(4)})，推荐周边3km内的。` : ""}${!location ? "我没有指定城市，推荐全国通用连锁品牌。" : ""}\n\n我的需求：${input.trim()}` },
           ],
           temperature: 0.7, max_tokens: 800,
         }),
