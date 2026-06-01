@@ -72,7 +72,9 @@ export default function Home() {
   const [showJoin, setShowJoin] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [location, setLocation] = useState<string | null>(null);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [locationInput, setLocationInput] = useState("");
+  const [locating, setLocating] = useState(false);
 
   const handleSubmit = useCallback(async () => {
     if (input.trim().length < 3) return;
@@ -119,6 +121,33 @@ export default function Home() {
 
   const handleJoinRoom = () => {
     if (joinCode.length >= 4) window.location.href = `/room/${joinCode}`;
+  };
+
+  const handleLocate = () => {
+    if (!navigator.geolocation) { alert("浏览器不支持定位"); return; }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=12&accept-language=zh`,
+            { headers: { "User-Agent": "DecideNow/1.0" } }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const d = data.address || {};
+            const city = d.city || d.town || d.county || "";
+            const district = d.city_district || d.suburb || "";
+            setLocation(district || city || "已定位");
+            setShowLocationPicker(false);
+          }
+        } catch { alert("定位失败，请手动输入"); }
+        finally { setLocating(false); }
+      },
+      () => { alert("请在浏览器设置中允许定位权限"); setLocating(false); },
+      { timeout: 8000, enableHighAccuracy: false }
+    );
   };
 
   const sel = view === "result" ? options[selectedIdx] : null;
@@ -203,13 +232,79 @@ export default function Home() {
 
         {/* Header */}
         <div className="mb-14 flex items-center justify-between">
-          <span className="text-xs font-bold tracking-[0.2em] text-foreground/30">DECIDENOW</span>
+          {/* 城市选择器 —— 淘宝风格 */}
+          <div className="relative">
+            <button
+              onClick={() => setShowLocationPicker(!showLocationPicker)}
+              className="flex items-center gap-1 text-sm font-semibold text-foreground hover:text-primary transition-colors"
+            >
+              <MapPin className="h-4 w-4 text-primary" />
+              <span>{location || "选择城市"}</span>
+              <svg className={`h-3 w-3 transition-transform ${showLocationPicker ? "rotate-180" : ""}`} viewBox="0 0 12 12" fill="currentColor"><path d="M3 5l3 3 3-3"/></svg>
+            </button>
+
+            {/* 下拉面板 */}
+            {showLocationPicker && (
+              <div className="absolute left-0 top-8 z-50 w-64 animate-in rounded-2xl bg-card border border-border shadow-lg p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <input
+                    value={locationInput}
+                    onChange={(e) => setLocationInput(e.target.value)}
+                    placeholder="搜索城市或区域"
+                    className="input-premium flex-1 py-2 text-xs"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && locationInput.trim()) {
+                        setLocation(locationInput.trim());
+                        setLocationInput("");
+                        setShowLocationPicker(false);
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      if (locationInput.trim()) {
+                        setLocation(locationInput.trim());
+                        setLocationInput("");
+                        setShowLocationPicker(false);
+                      }
+                    }}
+                    className="shrink-0 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white"
+                  >
+                    确定
+                  </button>
+                </div>
+                <button
+                  onClick={handleLocate}
+                  disabled={locating}
+                  className="flex w-full items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5 text-sm font-medium text-foreground/70 hover:bg-muted transition-colors"
+                >
+                  <Navigation className="h-4 w-4 text-primary" />
+                  {locating ? "定位中..." : "📍 使用当前位置"}
+                </button>
+                <div className="mt-3 grid grid-cols-3 gap-1.5">
+                  {["上海", "北京", "深圳", "广州", "杭州", "成都", "重庆", "武汉", "南京"].map((city) => (
+                    <button
+                      key={city}
+                      onClick={() => { setLocation(city); setShowLocationPicker(false); }}
+                      className={`rounded-lg py-2 text-xs font-medium transition-colors ${
+                        location === city ? "bg-primary/10 text-primary" : "text-foreground/60 hover:bg-muted"
+                      }`}
+                    >
+                      {city}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 右侧操作 */}
           <div className="flex items-center gap-3">
             {showJoin ? (
               <div className="flex items-center gap-1.5 animate-in">
                 <input value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                   placeholder="分享码" maxLength={6}
-                  className="w-28 rounded-lg border border-border bg-white px-3 py-2 text-xs font-mono tracking-widest placeholder:text-foreground/15 focus:outline-none focus:border-primary/40" />
+                  className="w-28 rounded-lg border border-border bg-card px-3 py-2 text-xs font-mono tracking-widest placeholder:text-foreground/20 focus:outline-none focus:border-primary/40" />
                 <button onClick={handleJoinRoom} disabled={joinCode.length < 4}
                   className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white disabled:opacity-30">进入</button>
                 <button onClick={() => { setShowJoin(false); setJoinCode(""); }} className="text-foreground/20 hover:text-foreground/50 text-xs">✕</button>
@@ -228,53 +323,6 @@ export default function Home() {
             今天<br />纠结什么？
           </h1>
         </div>
-
-        {/* Location */}
-        {location ? (
-          <div className="mb-4 flex items-center gap-1.5 text-xs">
-            <MapPin className="h-3 w-3 text-primary/60" />
-            <span className="text-muted-foreground">{location} 附近</span>
-            <button onClick={() => setLocation(null)} className="text-foreground/15 hover:text-foreground/40 text-[10px]">✕</button>
-          </div>
-        ) : (
-          <div className="mb-4 animate-in">
-            <div className="flex items-center gap-2 rounded-xl border border-dashed border-foreground/10 px-3 py-2.5">
-              <Navigation className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
-              <input
-                value={locationInput}
-                onChange={(e) => setLocationInput(e.target.value)}
-                placeholder="添加位置，推荐更精准"
-                className="flex-1 bg-transparent text-xs text-foreground/70 placeholder:text-foreground/25 focus:outline-none"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && locationInput.trim()) {
-                    setLocation(locationInput.trim());
-                    setLocationInput("");
-                  }
-                }}
-              />
-              <button
-                onClick={() => {
-                  if (locationInput.trim()) { setLocation(locationInput.trim()); setLocationInput(""); return; }
-                  if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                      async (pos) => {
-                        try {
-                          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&zoom=12&accept-language=zh`, { headers: { "User-Agent": "DecideNow/1.0" } });
-                          if (res.ok) { const data = await res.json(); const d = data.address || {}; setLocation(d.city_district || d.suburb || d.county || d.city || ""); }
-                        } catch { setLocation("当前位置"); }
-                      },
-                      () => {},
-                      { timeout: 8000 }
-                    );
-                  }
-                }}
-                className="shrink-0 rounded-lg bg-foreground/5 px-2.5 py-1.5 text-[10px] font-medium text-foreground/40 hover:text-foreground/60 hover:bg-foreground/8 transition-colors"
-              >
-                📍
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Input */}
         <textarea value={input} onChange={(e) => setInput(e.target.value)}
