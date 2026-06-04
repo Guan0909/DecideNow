@@ -148,6 +148,7 @@ export default function VotePage() {
   return (
     <div className="mx-auto max-w-lg px-5 py-8 safe-top safe-bottom">
       {/* 头部 */}
+      <button onClick={() => window.location.href = "/"} className="mb-4 text-xs font-medium text-foreground/30 hover:text-primary transition-colors">← 返回首页</button>
       <div className="mb-6">
         <div className="mb-2 flex items-center gap-2">
           {isFinished ? (

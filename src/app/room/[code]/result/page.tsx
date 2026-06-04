@@ -87,6 +87,7 @@ export default function ResultPage() {
 
   return (
     <div className="mx-auto max-w-lg px-5 py-8 safe-top safe-bottom">
+      <button onClick={() => window.location.href = "/"} className="mb-6 text-xs font-medium text-foreground/30 hover:text-primary transition-colors">← 返回首页</button>
       {/* 头部 */}
       <div className="mb-6 flex flex-col items-center gap-3 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
