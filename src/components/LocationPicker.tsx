@@ -47,7 +47,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
         const res = await fetch(`https://restapi.amap.com/v3/assistant/inputtips?key=${key}&keywords=${encodeURIComponent(v)}&output=JSON`);
         if (res.ok) {
           const data = await res.json();
-          if (data.tips) setSuggestions(data.tips.filter((t: any) => t.location && t.location !== "[]"));
+          if (data.tips) setSuggestions(data.tips.filter((t: { location: string }) => t.location && t.location !== "[]"));
         }
       } catch {} finally { setLoading(false); }
     }, 300);
