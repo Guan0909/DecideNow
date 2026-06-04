@@ -38,19 +38,43 @@ export default function CreateRoom() {
     const query = loc ? `${loc}附近，${topic}` : topic;
     setAiLoading(true);
     try {
-      const res = await fetch("https://api.deepseek.com/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
-        body: JSON.stringify({ model: "deepseek-v4-flash", messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: query }], temperature: 0.7, max_tokens: 200 }),
-      });
-      if (!res.ok) return;
-      const data = await res.json();
-      const text = data.choices?.[0]?.message?.content || "";
-      const match = text.match(/\[[\s\S]*\]/);
-      if (match) {
-        const arr = JSON.parse(match[0]);
-        if (Array.isArray(arr) && arr.length >= 2) {
-          setOptions(arr.map((item: string | { name: string; location: string }) => typeof item === "string" ? item : `${item.name} · ${item.location}`));
+      // 重试最多2次
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const res = await fetch("https://api.deepseek.com/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
+          body: JSON.stringify({ model: "deepseek-v4-pro", messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: query }], temperature: 0.7, max_tokens: 300 }),
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        const text = data.choices?.[0]?.message?.content || "";
+        // 尝试多种数组提取模式
+        let match = text.match(/\[[\s\S]*\]/);
+        if (!match) { // 尝试匹配代码块
+          const cm = text.match(/```(?:json)?\s*(\[[\s\S]*?\])\s*```/);
+          match = cm ? [cm[1]] : null;
+        }
+        if (match) {
+          try {
+            const arr = JSON.parse(match[0]);
+            if (Array.isArray(arr) && arr.length >= 2) {
+              setOptions(arr.map((item: string | { name: string; location: string }) => typeof item === "string" ? item : `${item.name} · ${item.location}`));
+              break; // 成功，退出重试
+            }
+          } catch {}
+        }
+        // 第2次尝试用更简单的提示词
+        if (attempt === 0) continue;
+        const retryRes = await fetch("https://api.deepseek.com/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
+          body: JSON.stringify({ model: "deepseek-v4-pro", messages: [{ role: "user", content: `为"${query}"生成3个投票选项，仅返回JSON数组:["选项1","选项2","选项3"]` }], temperature: 0.3, max_tokens: 200 }),
+        });
+        if (retryRes.ok) {
+          const d2 = await retryRes.json();
+          const t2 = d2.choices?.[0]?.message?.content || "";
+          const m2 = t2.match(/\[[\s\S]*\]/);
+          if (m2) { try { const arr = JSON.parse(m2[0]); if (Array.isArray(arr) && arr.length >= 2) setOptions(arr); } catch {} }
         }
       }
     } catch { /* ignore */ } finally { setAiLoading(false); }
