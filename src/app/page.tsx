@@ -99,7 +99,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
         body: JSON.stringify({
-          model: "deepseek-v4-flash",
+          model: "deepseek-v4-pro",
           messages: [
             { role: "system", content: GENERATE_SYSTEM_PROMPT },
             { role: "user", content: query },
@@ -133,7 +133,7 @@ export default function Home() {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
           body: JSON.stringify({
-            model: "deepseek-v4-flash",
+            model: "deepseek-v4-pro",
             messages: [
               { role: "user", content: `为"${query}"推荐3个选项，严格返回JSON: {"options":[{"name":"店名","description":"一句话","scoreCard":{"taste":4,"ambiance":4,"budget":4},"priceHint":"人均XX元","locationHint":"区域"}]}` },
             ],
@@ -150,7 +150,7 @@ export default function Home() {
         }
       }
 
-      if (!parsed?.options?.length) throw new Error("未生成选项");
+      if (!parsed?.options?.length) throw new Error("AI 暂时无法理解，试试更具体的描述");
       Metrics.aiGenerated(parsed.options.length, Date.now() - startTime);
       setOptions(parsed.options);
       setCurrentIndex(0);
