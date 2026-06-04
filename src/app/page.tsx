@@ -99,7 +99,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
         body: JSON.stringify({
-          model: "deepseek-v4-flash",
+          model: "deepseek-v4-pro",
           messages: [
             { role: "system", content: GENERATE_SYSTEM_PROMPT },
             { role: "user", content: query },
