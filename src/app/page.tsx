@@ -107,14 +107,50 @@ export default function Home() {
           temperature: 0.7, max_tokens: 800,
         }),
       });
-      if (!res.ok) throw new Error("AI 响应异常");
+      if (!res.ok) throw new Error("AI 响应异常(" + res.status + ")");
       const data = await res.json();
       const content = data.choices?.[0]?.message?.content;
       if (!content) throw new Error("AI 返回空");
-      const m = content.match(/\{[\s\S]*\}/);
-      if (!m) throw new Error("格式异常");
-      const parsed = JSON.parse(m[0]);
-      if (!parsed.options?.length) throw new Error("未生成选项");
+
+      // 兼容多种JSON格式
+      let parsed: { options?: DecisionOption[] } | null = null;
+      // 尝试1: 匹配代码块 ```json ... ```
+      const codeMatch = content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+      // 尝试2: 直接匹配花括号
+      const braceMatch = content.match(/\{[\s\S]*\}/);
+      const jsonStr = codeMatch?.[1] || braceMatch?.[0];
+      if (!jsonStr) throw new Error("AI 未返回 JSON 格式");
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch {
+        // 尝试修复常见问题：尾部逗号、未闭合引号
+        try { parsed = JSON.parse(jsonStr.replace(/,\s*}/g, "}").replace(/,\s*]/g, "]")); }
+        catch { throw new Error("AI 返回了无法解析的内容"); }
+      }
+      // 如果首次没生成选项，用简化提示词重试一次
+      if (!parsed?.options?.length) {
+        const retryRes = await fetch("https://api.deepseek.com/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
+          body: JSON.stringify({
+            model: "deepseek-v4-flash",
+            messages: [
+              { role: "user", content: `为"${query}"推荐3个选项，严格返回JSON: {"options":[{"name":"店名","description":"一句话","scoreCard":{"taste":4,"ambiance":4,"budget":4},"priceHint":"人均XX元","locationHint":"区域"}]}` },
+            ],
+            temperature: 0.5, max_tokens: 600,
+          }),
+        });
+        if (retryRes.ok) {
+          const d2 = await retryRes.json();
+          const c2 = d2.choices?.[0]?.message?.content || "";
+          const m2 = c2.match(/\{[\s\S]*\}/);
+          if (m2) {
+            try { parsed = JSON.parse(m2[0]); } catch {}
+          }
+        }
+      }
+
+      if (!parsed?.options?.length) throw new Error("未生成选项");
       Metrics.aiGenerated(parsed.options.length, Date.now() - startTime);
       setOptions(parsed.options);
       setCurrentIndex(0);
