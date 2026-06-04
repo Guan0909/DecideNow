@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Users, LogIn } from "lucide-react";
 import { OptionCard } from "@/components/OptionCard";
