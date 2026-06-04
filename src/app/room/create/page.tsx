@@ -34,12 +34,14 @@ export default function CreateRoom() {
   async function handleAiFill(titleText?: string) {
     const topic = titleText || title.trim();
     if (!topic || topic.length < 3) return;
+    const loc = sessionStorage.getItem("decidenow_room_location") || "";
+    const query = loc ? `${loc}附近，${topic}` : topic;
     setAiLoading(true);
     try {
       const res = await fetch("https://api.deepseek.com/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
-        body: JSON.stringify({ model: "deepseek-v4-flash", messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: topic }], temperature: 0.7, max_tokens: 200 }),
+        body: JSON.stringify({ model: "deepseek-v4-flash", messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: query }], temperature: 0.7, max_tokens: 200 }),
       });
       if (!res.ok) return;
       const data = await res.json();
