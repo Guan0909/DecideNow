@@ -40,7 +40,7 @@ export default function Home() {
   const [showJoin, setShowJoin] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [location, setLocation] = useState<string | null>(null);
-  const [locDetail, setLocDetail] = useState<string | null>(null);
+  const [, setLocDetail] = useState<string | null>(null);
   const [locCoords, setLocCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => { Metrics.visit(); }, []);
