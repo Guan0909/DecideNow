@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 // API Key 只在服务端，浏览器永远看不到
-const API_KEY = process.env.AI_API_KEY || "sk-c6544b31afef47a2b3d6a9cb0bcb3709";
+const API_KEY = process.env.AI_API_KEY;
 const API_BASE = process.env.AI_BASE_URL || "https://api.deepseek.com";
 
 export async function POST(request: Request) {

@@ -43,7 +43,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
     timerRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const key = "4687666a6b6d68df9ba83c006e29c68f";
+        const key = process.env.NEXT_PUBLIC_AMAP_API_KEY || "";
         const res = await fetch(`https://restapi.amap.com/v3/assistant/inputtips?key=${key}&keywords=${encodeURIComponent(v)}&output=JSON`);
         if (res.ok) {
           const data = await res.json();
@@ -72,7 +72,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude: lat, longitude: lng } = pos.coords;
       try {
-        const key = "4687666a6b6d68df9ba83c006e29c68f";
+        const key = process.env.NEXT_PUBLIC_AMAP_API_KEY || "";
         const res = await fetch(`https://restapi.amap.com/v3/geocode/regeo?key=${key}&location=${lng},${lat}&extensions=base&output=JSON`);
         if (res.ok) {
           const data = await res.json();
