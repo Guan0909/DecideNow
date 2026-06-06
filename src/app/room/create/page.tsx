@@ -40,9 +40,9 @@ export default function CreateRoom() {
     try {
       // 重试最多2次
       for (let attempt = 0; attempt < 2; attempt++) {
-        const res = await fetch("https://api.deepseek.com/chat/completions", {
+        const res = await fetch("/api/ai/proxy", {
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ model: "deepseek-v4-pro", messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: query }], temperature: 0.7, max_tokens: 300 }),
         });
         if (!res.ok) continue;
@@ -65,9 +65,9 @@ export default function CreateRoom() {
         }
         // 第2次尝试用更简单的提示词
         if (attempt === 0) continue;
-        const retryRes = await fetch("https://api.deepseek.com/chat/completions", {
+        const retryRes = await fetch("/api/ai/proxy", {
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ model: "deepseek-v4-pro", messages: [{ role: "user", content: `为"${query}"生成3个投票选项，仅返回JSON数组:["选项1","选项2","选项3"]` }], temperature: 0.3, max_tokens: 200 }),
         });
         if (retryRes.ok) {

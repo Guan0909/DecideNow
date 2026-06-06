@@ -64,9 +64,9 @@ export default function Home() {
     setErrorMsg("");
     const startTime = Date.now();
     try {
-      const res = await fetch("https://api.deepseek.com/chat/completions", {
+      const res = await fetch("/api/ai/proxy", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: "Bearer sk-c6544b31afef47a2b3d6a9cb0bcb3709" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "deepseek-v4-pro",
           messages: [{ role: "system", content: GENERATE_SYSTEM_PROMPT }, { role: "user", content: query }],
