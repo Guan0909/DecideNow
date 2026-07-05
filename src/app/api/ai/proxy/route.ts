@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         temperature,
         max_tokens,
       }),
-      signal: AbortSignal.timeout(30000), // 30秒超时
+      signal: AbortSignal.timeout(60000), // 60秒超时（v4-pro推理需要更长时间）
     });
 
     const data = await res.json();
