@@ -49,10 +49,20 @@ export default function Home() {
     setLocation(display);
     setLocDetail(detail);
     setLocCoords(coords);
+    setLocWarning(false); // 设置位置后消除警告
   }, []);
+
+  const [locWarning, setLocWarning] = useState(false);
 
   const handleSubmit = useCallback(async () => {
     if (input.trim().length < 3) return;
+    // 未定位且输入不含城市名 → 拦截并提示
+    const cityMatch = input.trim().match(/北京|上海|广州|深圳|杭州|成都|重庆|武汉|南京|苏州|西安|长沙|天津|青岛|厦门|大连|沈阳|郑州|昆明|贵阳|南宁|合肥|南昌|福州|哈尔滨|长春|石家庄|太原|呼和浩特|乌鲁木齐|拉萨|兰州|西宁|银川|海口/);
+    if (!location && !cityMatch && !locWarning) {
+      setLocWarning(true);
+      return;
+    }
+    setLocWarning(false);
     // 位置拼入输入
     const locStr = locCoords
       ? `我在${location}（坐标${locCoords.lat.toFixed(4)},${locCoords.lng.toFixed(4)}），请按距离排序推荐`
@@ -165,21 +175,34 @@ export default function Home() {
     <main className="flex min-h-screen flex-col bg-background safe-top">
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-5 pt-12">
         {/* Header with LocationPicker */}
-        <div className="mb-14 flex items-center justify-between">
-          <LocationPicker value={location} onChange={handleLocChange} />
-          <div className="flex items-center gap-3">
-            {showJoin ? (
-              <div className="flex items-center gap-1.5 animate-in">
-                <input value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} placeholder="分享码" maxLength={6}
-                  className="w-28 rounded-lg border border-border bg-card px-3 py-2 text-xs font-mono tracking-widest focus:outline-none focus:border-primary/40" />
-                <button onClick={() => { if (joinCode.length >= 4) window.location.href = `/room/${joinCode}`; }} disabled={joinCode.length < 4}
-                  className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white disabled:opacity-30">进入</button>
-                <button onClick={() => { setShowJoin(false); setJoinCode(""); }} className="text-foreground/20 hover:text-foreground/50 text-xs">✕</button>
-              </div>
-            ) : (
-              <button onClick={() => setShowJoin(true)} className="text-xs text-foreground/30 hover:text-primary transition-colors flex items-center gap-1"><LogIn className="h-3 w-3" />加入</button>
-            )}
+        <div className="mb-14">
+          <div className="flex items-center justify-between">
+            <LocationPicker value={location} onChange={handleLocChange} />
+            <div className="flex items-center gap-3">
+              {showJoin ? (
+                <div className="flex items-center gap-1.5 animate-in">
+                  <input value={joinCode} onChange={(e) => setJoinCode(e.target.value.toUpperCase())} placeholder="分享码" maxLength={6}
+                    className="w-28 rounded-lg border border-border bg-card px-3 py-2 text-xs font-mono tracking-widest focus:outline-none focus:border-primary/40" />
+                  <button onClick={() => { if (joinCode.length >= 4) window.location.href = `/room/${joinCode}`; }} disabled={joinCode.length < 4}
+                    className="rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white disabled:opacity-30">进入</button>
+                  <button onClick={() => { setShowJoin(false); setJoinCode(""); }} className="text-foreground/20 hover:text-foreground/50 text-xs">✕</button>
+                </div>
+              ) : (
+                <button onClick={() => setShowJoin(true)} className="text-xs text-foreground/30 hover:text-primary transition-colors flex items-center gap-1"><LogIn className="h-3 w-3" />加入</button>
+              )}
+            </div>
           </div>
+          {/* 位置提示 */}
+          {locWarning && (
+            <p className="mt-2 text-xs text-amber-500 animate-in flex items-center gap-1">
+              <span>⚠️</span> 未设置位置可能导致推荐不准确，请点击左上角选择城市或开启定位
+            </p>
+          )}
+          {!location && !locWarning && input.trim().length >= 3 && (
+            <p className="mt-2 text-[11px] text-muted-foreground/40 flex items-center gap-1">
+              <span>💡</span> 建议先选择位置，推荐会更精准
+            </p>
+          )}
         </div>
 
         {/* Hero */}
