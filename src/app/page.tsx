@@ -70,7 +70,7 @@ export default function Home() {
         body: JSON.stringify({
           model: "deepseek-v4-pro",
           messages: [{ role: "system", content: GENERATE_SYSTEM_PROMPT }, { role: "user", content: query }],
-          temperature: 0.7, max_tokens: 800,
+          temperature: 0.7, max_tokens: 3000,
         }),
       });
       if (!res.ok) throw new Error("API错误" + res.status);

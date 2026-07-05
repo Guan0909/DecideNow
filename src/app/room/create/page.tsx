@@ -43,7 +43,7 @@ export default function CreateRoom() {
         const res = await fetch("/api/ai/proxy", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: "deepseek-v4-pro", messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: query }], temperature: 0.7, max_tokens: 300 }),
+          body: JSON.stringify({ model: "deepseek-v4-pro", messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: query }], temperature: 0.7, max_tokens: 2000 }),
         });
         if (!res.ok) continue;
         const data = await res.json();
@@ -68,7 +68,7 @@ export default function CreateRoom() {
         const retryRes = await fetch("/api/ai/proxy", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: "deepseek-v4-pro", messages: [{ role: "user", content: `为"${query}"生成3个投票选项，仅返回JSON数组:["选项1","选项2","选项3"]` }], temperature: 0.3, max_tokens: 200 }),
+          body: JSON.stringify({ model: "deepseek-v4-pro", messages: [{ role: "user", content: `为"${query}"生成3个投票选项，仅返回JSON数组:["选项1","选项2","选项3"]` }], temperature: 0.3, max_tokens: 500 }),
         });
         if (retryRes.ok) {
           const d2 = await retryRes.json();
